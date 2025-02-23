@@ -5,43 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inscrição Eletivas</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Inscrição nas Eletivas</h1>
-
-    <!-- Formulário de Inscrição -->
-    <form id="inscricaoForm">
-      <label for="alunoNome">Nome do Aluno:</label>
-      <input type="text" id="alunoNome" name="alunoNome" required>
-
-      <label for="turma">Turma:</label>
-      <input type="text" id="turma" name="turma" required>
-
-      <label for="eletiva">Eletiva:</label>
-      <select id="eletiva" name="eletiva" required>
-        <option value="Eletiva1">Eletiva 1</option>
-        <option value="Eletiva2">Eletiva 2</option>
-        <option value="Eletiva3">Eletiva 3</option>
-      </select>
-
-      <button type="submit">Inscrever</button>
-    </form>
-
-    <!-- Exibição das Inscrições e Vagas -->
-    <h2>Inscrições Recentes</h2>
-    <ul id="inscricoesList"></ul>
-
-    <h2>Vagas Restantes</h2>
-    <ul id="vagasList">
-      <li>Eletiva 1: <span id="vagasEletiva1"></span> vagas</li>
-      <li>Eletiva 2: <span id="vagasEletiva2"></span> vagas</li>
-      <li>Eletiva 3: <span id="vagasEletiva3"></span> vagas</li>
-    </ul>
-  </div>
-
-  <script src="app.js"></script>
+  <div id="app"></div>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel" src="app.js"></script>
 </body>
 </html>
