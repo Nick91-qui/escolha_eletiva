@@ -1,9 +1,13 @@
-/* Estilos gerais */
-body {
-    font-family: Arial, sans-serif;
+/* Resetando alguns estilos padrões */
+* {
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0; /* Fundo claro */
     color: #333;
 }
 
@@ -11,53 +15,29 @@ header {
     background-color: #007bff; /* Azul */
     color: white;
     text-align: center;
-    padding: 20px;
+    padding: 20px 0;
 }
 
 h1 {
     margin: 0;
+    font-size: 2rem;
 }
 
 main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
     padding: 20px;
 }
 
 .form-container {
     background-color: white;
-    padding: 20px;
+    padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-form select, form input {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-}
-
-form button {
-    background-color: #e74c3c; /* Vermelho */
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-form button:disabled {
-    background-color: #ddd;
-    cursor: not-allowed;
+    max-width: 600px;
 }
 
 h2 {
@@ -65,10 +45,41 @@ h2 {
     margin-top: 30px;
 }
 
+form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+form select, form input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+form button {
+    background-color: #e74c3c; /* Vermelho */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+form button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 table th, table td {
