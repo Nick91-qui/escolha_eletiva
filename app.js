@@ -30,6 +30,21 @@ async function carregarTurmas() {
     });
 }
 
+// Função para carregar os nomes dos alunos
+async function carregarNomes() {
+    const alunosRef = collection(db, "alunos");
+    const snapshot = await getDocs(alunosRef);
+    const nomeSelect = document.getElementById("nome");
+
+    snapshot.forEach(doc => {
+        const nomeAluno = doc.data().nomealuno;
+        const option = document.createElement("option");
+        option.value = nomeAluno;
+        option.textContent = nomeAluno;
+        nomeSelect.appendChild(option);
+    });
+}
+
 // Função para carregar as eletivas
 async function carregarEletivas() {
     const eletivasRef = collection(db, "eletiva");
@@ -47,7 +62,7 @@ async function carregarEletivas() {
     });
 }
 
-// Função para validar o nome
+// Função para validar o nome e turma
 async function validarNome(nome, turma) {
     const alunosRef = collection(db, "alunos");
     const querySnapshot = await getDocs(query(alunosRef, where("turma", "==", turma)));
@@ -103,13 +118,14 @@ window.onload = async () => {
     carregarTurmas();
     carregarEletivas();
     carregarInscricoes();
+    carregarNomes(); // Carregar os nomes dos alunos
 
     // Event listener para validar nome e habilitar a seleção da eletiva
-    document.getElementById("nome").addEventListener("blur", async () => {
+    document.getElementById("nome").addEventListener("change", async () => {
         const nome = document.getElementById("nome").value;
         const turma = document.getElementById("turma").value;
 
-        if (await validarNome(nome, turma)) {
+        if (nome && turma && await validarNome(nome, turma)) {
             document.getElementById("eletiva").disabled = false;
             document.getElementById("inscrever-btn").disabled = false;
         } else {
