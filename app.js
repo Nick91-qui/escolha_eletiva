@@ -1,8 +1,8 @@
 const { useState, useEffect } = React;
 
 const eletivasIniciais = [
-  { nome: "Arte Digital", vagas: 3 },
-  { nome: "Astronomia", vagas: 2 },
+  { nome: "Arte Digital", vagas: 1 },
+  { nome: "Astronomia", vagas: 1 },
   { nome: "Biotecnologia", vagas: 3 },
   { nome: "Cinema e Sociedade", vagas: 2 },
   { nome: "Design de Jogos", vagas: 3 },
@@ -29,16 +29,9 @@ function InscricaoEletivas() {
   const [eletivas, setEletivas] = useState(eletivasIniciais);
 
   useEffect(() => {
-    const contagem = inscricoes.reduce((acc, { eletiva }) => {
-      acc[eletiva] = (acc[eletiva] || 0) + 1;
-      return acc;
-    }, {});
-
-    setEletivas(eletivasIniciais.map(e => ({
-      nome: e.nome,
-      vagas: Math.max(0, e.vagas - (contagem[e.nome] || 0))
-    })));
-  }, [inscricoes]);
+    // Recupera inscrições do Firestore quando o componente for carregado
+    fetchInscricoes();
+  }, []);
 
   const verificarNome = (nome) => {
     setAlunoNome(nome);
@@ -68,6 +61,10 @@ function InscricaoEletivas() {
 
       setErroInscricao("");
       setInscricoes([...inscricoes, { turma: turmaSelecionada, nome: alunoNome, eletiva: eletivaSelecionada }]);
+
+      // Chama a função para adicionar a inscrição no Firestore
+      handleInscricao(turmaSelecionada, alunoNome, eletivaSelecionada);
+
       setAlunoNome("");
       setEletivaSelecionada("");
       setNomeValido(false);
