@@ -1,5 +1,3 @@
-
-// Seu código React aqui
 const eletivas = [
   "Arte Digital", "Astronomia", "Biotecnologia", "Cinema e Sociedade", "Design de Jogos",
   "Empreendedorismo", "Escrita Criativa", "Fotografia", "Inteligência Artificial",
@@ -7,18 +5,18 @@ const eletivas = [
 ];
 
 function InscricaoEletivas() {
-  const [turmas, setTurmas] = useState(["1A", "1B", "2A", "2B", "3A", "3B"]);
-  const [alunos, setAlunos] = useState({ "1A": ["Ana Silva", "Bruno Souza"], "1B": ["Carlos Mendes", "Daniela Lima"] });
-  const [turmaSelecionada, setTurmaSelecionada] = useState("");
-  const [alunoNome, setAlunoNome] = useState("");
-  const [eletivaSelecionada, setEletivaSelecionada] = useState("");
-  const [inscricoes, setInscricoes] = useState([]);
-  const [limites, setLimites] = useState({});
-  const [erroNome, setErroNome] = useState("");
-  const [erroInscricao, setErroInscricao] = useState("");
-  const [nomeValido, setNomeValido] = useState(false);
+  const [turmas, setTurmas] = React.useState(["1A", "1B", "2A", "2B", "3A", "3B"]);
+  const [alunos, setAlunos] = React.useState({ "1A": ["Ana Silva", "Bruno Souza"], "1B": ["Carlos Mendes", "Daniela Lima"] });
+  const [turmaSelecionada, setTurmaSelecionada] = React.useState("");
+  const [alunoNome, setAlunoNome] = React.useState("");
+  const [eletivaSelecionada, setEletivaSelecionada] = React.useState("");
+  const [inscricoes, setInscricoes] = React.useState([]);
+  const [limites, setLimites] = React.useState({});
+  const [erroNome, setErroNome] = React.useState("");
+  const [erroInscricao, setErroInscricao] = React.useState("");
+  const [nomeValido, setNomeValido] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const contagem = inscricoes.reduce((acc, { eletiva }) => {
       acc[eletiva] = (acc[eletiva] || 0) + 1;
       return acc;
@@ -116,4 +114,5 @@ function InscricaoEletivas() {
   );
 }
 
-ReactDOM.render(<InscricaoEletivas />, document.getElementById("app"));
+const root = ReactDOM.createRoot(document.getElementById("app"));
+root.render(<InscricaoEletivas />);
