@@ -1,3 +1,5 @@
+const { useState, useEffect } = React;
+
 const eletivas = [
   "Arte Digital", "Astronomia", "Biotecnologia", "Cinema e Sociedade", "Design de Jogos",
   "Empreendedorismo", "Escrita Criativa", "Fotografia", "Inteligência Artificial",
@@ -5,18 +7,18 @@ const eletivas = [
 ];
 
 function InscricaoEletivas() {
-  const [turmas, setTurmas] = React.useState(["1A", "1B", "2A", "2B", "3A", "3B"]);
-  const [alunos, setAlunos] = React.useState({ "1A": ["Ana Silva", "Bruno Souza"], "1B": ["Carlos Mendes", "Daniela Lima"] });
-  const [turmaSelecionada, setTurmaSelecionada] = React.useState("");
-  const [alunoNome, setAlunoNome] = React.useState("");
-  const [eletivaSelecionada, setEletivaSelecionada] = React.useState("");
-  const [inscricoes, setInscricoes] = React.useState([]);
-  const [limites, setLimites] = React.useState({});
-  const [erroNome, setErroNome] = React.useState("");
-  const [erroInscricao, setErroInscricao] = React.useState("");
-  const [nomeValido, setNomeValido] = React.useState(false);
+  const [turmas, setTurmas] = useState(["1A", "1B", "2A", "2B", "3A", "3B"]);
+  const [alunos, setAlunos] = useState({ "1A": ["Ana Silva", "Bruno Souza"], "1B": ["Carlos Mendes", "Daniela Lima"] });
+  const [turmaSelecionada, setTurmaSelecionada] = useState("");
+  const [alunoNome, setAlunoNome] = useState("");
+  const [eletivaSelecionada, setEletivaSelecionada] = useState("");
+  const [inscricoes, setInscricoes] = useState([]);
+  const [limites, setLimites] = useState({});
+  const [erroNome, setErroNome] = useState("");
+  const [erroInscricao, setErroInscricao] = useState("");
+  const [nomeValido, setNomeValido] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const contagem = inscricoes.reduce((acc, { eletiva }) => {
       acc[eletiva] = (acc[eletiva] || 0) + 1;
       return acc;
@@ -54,7 +56,7 @@ function InscricaoEletivas() {
   return (
     <div className="p-4 space-y-4">
       <div className="card">
-        <div className="card-content space-y-4 p-4">
+        <div className="card-content">
           <select onChange={(e) => setTurmaSelecionada(e.target.value)} value={turmaSelecionada}>
             <option value="">Selecione sua turma</option>
             {turmas.map((turma) => (
@@ -88,8 +90,8 @@ function InscricaoEletivas() {
       </div>
 
       <div className="card">
-        <div className="card-content p-4">
-          <h2 className="text-xl font-bold mb-4">Lista de Inscritos</h2>
+        <div className="card-content">
+          <h2>Lista de Inscritos</h2>
           <table>
             <thead>
               <tr>
@@ -114,5 +116,4 @@ function InscricaoEletivas() {
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById("app"));
-root.render(<InscricaoEletivas />);
+ReactDOM.createRoot(document.getElementById("app")).render(<InscricaoEletivas />);
