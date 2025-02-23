@@ -1,28 +1,23 @@
-const { initializeApp } = firebase;
-const { getFirestore, collection, addDoc, updateDoc, getDoc, query, where, getDocs, doc } = firebase.firestore;
-
-// Configuração do Firebase
-const firebaseConfig = {
+// Não precisa do require, use diretamente as variáveis globais do Firebase
+const app = firebase.initializeApp({
   apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
   authDomain: "device-streaming-9e3b934a.firebaseapp.com",
   projectId: "device-streaming-9e3b934a",
   storageBucket: "device-streaming-9e3b934a.firebasestorage.app",
   messagingSenderId: "608328398854",
   appId: "1:608328398854:web:706cf69b6dcb751930ab87"
-};
+});
 
-// Inicializa Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = firebase.firestore();
 
 // Função para inscrever aluno em uma eletiva
 async function inscreverAluno(alunoId, eletivaId) {
-  const alunoRef = doc(db, "alunos", alunoId);
-  const eletivaRef = doc(db, "eletivas", eletivaId);
+  const alunoRef = db.collection("alunos").doc(alunoId);
+  const eletivaRef = db.collection("eletivas").doc(eletivaId);
 
   // Verificar se a eletiva tem vagas
-  const eletivaDoc = await getDoc(eletivaRef);
-  if (!eletivaDoc.exists()) {
+  const eletivaDoc = await eletivaRef.get();
+  if (!eletivaDoc.exists) {
     console.log("Eletiva não encontrada");
     return;
   }
@@ -34,8 +29,8 @@ async function inscreverAluno(alunoId, eletivaId) {
   }
 
   // Verificar se o aluno já está inscrito em uma eletiva
-  const alunoDoc = await getDoc(alunoRef);
-  if (alunoDoc.exists() && alunoDoc.data().eletivaInscrita) {
+  const alunoDoc = await alunoRef.get();
+  if (alunoDoc.exists && alunoDoc.data().eletivaInscrita) {
     console.log("O aluno já está inscrito em uma eletiva");
     return;
   }
@@ -43,18 +38,18 @@ async function inscreverAluno(alunoId, eletivaId) {
   // Registrar inscrição no Firestore
   try {
     // Inscreve aluno na eletiva
-    await addDoc(collection(db, "inscricoes"), {
+    await db.collection("inscricoes").add({
       alunoId: alunoId,
       eletivaId: eletivaId
     });
 
     // Atualiza o aluno com a eletiva escolhida
-    await updateDoc(alunoRef, {
+    await alunoRef.update({
       eletivaInscrita: eletivaId
     });
 
     // Atualiza o número de vagas disponíveis
-    await updateDoc(eletivaRef, {
+    await eletivaRef.update({
       vagas: vagasDisponiveis - 1
     });
 
@@ -67,9 +62,8 @@ async function inscreverAluno(alunoId, eletivaId) {
 
 // Função para listar alunos inscritos em uma eletiva
 async function listarInscricoesPorEletiva(eletivaId) {
-  const inscricoesRef = collection(db, "inscricoes");
-  const q = query(inscricoesRef, where("eletivaId", "==", eletivaId));
-  const querySnapshot = await getDocs(q);
+  const inscricoesRef = db.collection("inscricoes");
+  const querySnapshot = await inscricoesRef.where("eletivaId", "==", eletivaId).get();
   querySnapshot.forEach((doc) => {
     console.log("Aluno ID:", doc.data().alunoId);
   });
