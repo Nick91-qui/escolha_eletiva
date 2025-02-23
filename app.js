@@ -1,6 +1,10 @@
 // Configuração do Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
+
+};
+// Configuração do Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
   authDomain: "device-streaming-9e3b934a.firebaseapp.com",
   projectId: "device-streaming-9e3b934a",
   storageBucket: "device-streaming-9e3b934a.firebasestorage.app",
