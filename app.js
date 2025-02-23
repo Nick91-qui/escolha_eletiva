@@ -1,9 +1,5 @@
 // Configuração do Firebase
 const firebaseConfig = {
-
-};
-// Configuração do Firebase
-const firebaseConfig = {
   apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
   authDomain: "device-streaming-9e3b934a.firebaseapp.com",
   projectId: "device-streaming-9e3b934a",
@@ -56,7 +52,7 @@ async function validarNome(nome, turma) {
     let nomeValido = false;
     querySnapshot.forEach(doc => {
         const nomeAluno = doc.data().nomealuno.toLowerCase();
-        if (nomeAluno.includes(nome.toLowerCase())) {
+        if (nomeAluno === nome.toLowerCase()) {
             nomeValido = true;
         }
     });
