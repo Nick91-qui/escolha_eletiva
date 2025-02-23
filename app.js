@@ -1,8 +1,4 @@
-import React, { useState } from 'react';
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
-
-// Configuração do Firebase (substitua pelos seus dados reais)
+// Configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
   authDomain: "device-streaming-9e3b934a.firebaseapp.com",
@@ -13,100 +9,96 @@ const firebaseConfig = {
 };
 
 // Inicializa o Firebase
-const app = initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-// Obtém o Firestore
-const db = getFirestore(app);
-
-// Função para adicionar inscrição no Firestore
-async function handleInscricao(turmaSelecionada, alunoNome, eletivaSelecionada) {
-  try {
-    // Adiciona o documento na coleção de "inscricoes"
-    await addDoc(collection(db, "inscricoes"), {
-      turma: turmaSelecionada,
-      nome: alunoNome,
-      eletiva: eletivaSelecionada,
-    });
-    console.log("Inscrição adicionada com sucesso!");
-  } catch (e) {
-    console.error("Erro ao adicionar inscrição: ", e);
-  }
+// Função para verificar se o aluno já se inscreveu em alguma eletiva
+async function verificarInscricao(alunoNome) {
+  const inscritosRef = db.collection("inscricoes");
+  const snapshot = await inscritosRef.where("nome", "==", alunoNome).get();
+  return !snapshot.empty; // Se já houver uma inscrição, retorna true
 }
 
-// Função para recuperar as inscrições do Firestore
-async function fetchInscricoes() {
-  try {
-    const querySnapshot = await getDocs(collection(db, "inscricoes"));
-    const inscricoes = [];
-    querySnapshot.forEach((doc) => {
-      inscricoes.push(doc.data());
-    });
-    return inscricoes;
-  } catch (e) {
-    console.error("Erro ao recuperar inscrições: ", e);
-  }
+// Função para verificar as vagas restantes
+async function verificarVagas() {
+  const eletivasRef = db.collection("eletivas");
+  const snapshot = await eletivasRef.get();
+  let vagas = {};
+
+  snapshot.forEach((doc) => {
+    vagas[doc.id] = doc.data().vagas;
+  });
+
+  // Atualiza as vagas na interface
+  document.getElementById("vagasEletiva1").innerText = vagas["Eletiva1"] || 0;
+  document.getElementById("vagasEletiva2").innerText = vagas["Eletiva2"] || 0;
+  document.getElementById("vagasEletiva3").innerText = vagas["Eletiva3"] || 0;
+
+  return vagas;
 }
 
-// Componente principal do app (React)
-const InscricaoEletivas = () => {
-  const [turma, setTurma] = useState('');
-  const [aluno, setAluno] = useState('');
-  const [eletiva, setEletiva] = useState('');
-  const [inscricoes, setInscricoes] = useState([]);
+// Função para fazer a inscrição do aluno
+async function inscreverAluno(turma, alunoNome, eletivaSelecionada) {
+  const vagas = await verificarVagas();
 
-  // Função para adicionar inscrição
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    await handleInscricao(turma, aluno, eletiva);
-    // Atualiza a lista de inscrições após o envio
-    const novasInscricoes = await fetchInscricoes();
-    setInscricoes(novasInscricoes);
-  };
+  // Verifica se o aluno já está inscrito
+  if (await verificarInscricao(alunoNome)) {
+    alert("Este aluno já está inscrito em uma eletiva!");
+    return;
+  }
 
-  return (
-    <div>
-      <h1>Inscrição nas Eletivas</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Nome do Aluno:</label>
-          <input
-            type="text"
-            value={aluno}
-            onChange={(e) => setAluno(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Turma:</label>
-          <input
-            type="text"
-            value={turma}
-            onChange={(e) => setTurma(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Eletiva:</label>
-          <input
-            type="text"
-            value={eletiva}
-            onChange={(e) => setEletiva(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Inscrever</button>
-      </form>
+  // Verifica se há vagas disponíveis para a eletiva
+  if (vagas[eletivaSelecionada] <= 0) {
+    alert("Não há vagas disponíveis para esta eletiva!");
+    return;
+  }
 
-      <h2>Inscrições Realizadas:</h2>
-      <ul>
-        {inscricoes.map((inscricao, index) => (
-          <li key={index}>
-            {inscricao.nome} - {inscricao.turma} - {inscricao.eletiva}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
+  // Cria a inscrição no Firestore
+  await db.collection("inscricoes").add({
+    turma: turma,
+    nome: alunoNome,
+    eletiva: eletivaSelecionada
+  });
 
-export default InscricaoEletivas;
+  // Atualiza o número de vagas
+  await db.collection("eletivas").doc(eletivaSelecionada).update({
+    vagas: firebase.firestore.FieldValue.increment(-1) // Diminui 1 vaga
+  });
+
+  alert("Inscrição realizada com sucesso!");
+  listarInscricoes();
+  verificarVagas();
+}
+
+// Função para listar as inscrições na interface
+async function listarInscricoes() {
+  const inscritosRef = db.collection("inscricoes");
+  const snapshot = await inscritosRef.get();
+  const inscricoesList = document.getElementById("inscricoesList");
+  inscricoesList.innerHTML = ""; // Limpa a lista antes de atualizar
+
+  snapshot.forEach((doc) => {
+    const li = document.createElement("li");
+    const data = doc.data();
+    li.textContent = `${data.nome} - ${data.turma} - ${data.eletiva}`;
+    inscricoesList.appendChild(li);
+  });
+}
+
+// Inicializa a página e carrega as inscrições
+document.addEventListener("DOMContentLoaded", async () => {
+  await listarInscricoes();
+  await verificarVagas();
+});
+
+// Manipulador de evento do formulário
+document.getElementById("inscricaoForm").addEventListener("submit", (event) => {
+  event.preventDefault(); // Evita o envio do formulário
+
+  const alunoNome = document.getElementById("alunoNome").value;
+  const turma = document.getElementById("turma").value;
+  const eletivaSelecionada = document.getElementById("eletiva").value;
+
+  // Inscreve o aluno
+  inscreverAluno(turma, alunoNome, eletivaSelecionada);
+});
