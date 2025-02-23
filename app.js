@@ -50,20 +50,29 @@ async function validarNome(nome, turma) {
     const querySnapshot = await alunosRef.where("turma", "==", turma).get();
 
     let nomeValido = false;
-    
+
     // Verifica se algum aluno corresponde à turma e nome
     querySnapshot.forEach(doc => {
         const aluno = doc.data();
-        if (aluno && aluno.nomealuno && aluno.turma) {
-            const nomeAluno = aluno.nomealuno.toLowerCase();
-            if (nomeAluno === nome.toLowerCase()) {
-                nomeValido = true;
+        if (aluno) {
+            const nomeAluno = aluno.nomealuno;
+            const turmaAluno = aluno.turma;
+
+            // Verificação para garantir que temos os dados necessários
+            if (nomeAluno && turmaAluno) {
+                console.log("Aluno encontrado:", nomeAluno, turmaAluno); // Depuração para ver os dados
+                if (nomeAluno.toLowerCase() === nome.toLowerCase()) {
+                    nomeValido = true;
+                }
+            } else {
+                console.log("Dados do aluno incompletos:", aluno); // Depuração
             }
         }
     });
 
     return nomeValido;
 }
+
 
 
 // Função para inscrever o aluno
