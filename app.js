@@ -54,14 +54,15 @@ async function validarNome(nome, turma) {
     // Verifica se algum aluno corresponde à turma e nome
     querySnapshot.forEach(doc => {
         const aluno = doc.data();
+        
         if (aluno) {
-            const nomeAluno = aluno.nomealuno;
-            const turmaAluno = aluno.turma;
+            const nomeAluno = aluno.nomealuno && aluno.nomealuno.trim().toLowerCase();
+            const turmaAluno = aluno.turma && aluno.turma.trim().toLowerCase();
 
             // Verificação para garantir que temos os dados necessários
             if (nomeAluno && turmaAluno) {
                 console.log("Aluno encontrado:", nomeAluno, turmaAluno); // Depuração para ver os dados
-                if (nomeAluno.toLowerCase() === nome.toLowerCase()) {
+                if (nomeAluno === nome.trim().toLowerCase() && turmaAluno === turma.trim().toLowerCase()) {
                     nomeValido = true;
                 }
             } else {
@@ -72,6 +73,7 @@ async function validarNome(nome, turma) {
 
     return nomeValido;
 }
+
 
 
 
