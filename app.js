@@ -1,20 +1,3 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, query, where, addDoc } from "firebase/firestore";
-
-// Configuração do Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
-  authDomain: "device-streaming-9e3b934a.firebaseapp.com",
-  projectId: "device-streaming-9e3b934a",
-  storageBucket: "device-streaming-9e3b934a.firebasestorage.app",
-  messagingSenderId: "608328398854",
-  appId: "1:608328398854:web:706cf69b6dcb751930ab87"
-};
-
-// Inicialize o Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 // Função para carregar as turmas
 async function carregarTurmas() {
     const turmasRef = collection(db, "alunos");
@@ -30,36 +13,28 @@ async function carregarTurmas() {
     });
 }
 
-// Função para carregar os nomes dos alunos
-async function carregarNomes() {
+// Função para carregar os nomes dos alunos com base na turma selecionada
+async function carregarNomes(turmaSelecionada) {
     const alunosRef = collection(db, "alunos");
-    const snapshot = await getDocs(alunosRef);
+    const snapshot = await getDocs(query(alunosRef, where("turma", "==", turmaSelecionada)));
     const nomeSelect = document.getElementById("nome");
+    nomeSelect.innerHTML = ""; // Limpar as opções anteriores
+    nomeSelect.disabled = false; // Habilitar a seleção de nome
 
-    snapshot.forEach(doc => {
-        const nomeAluno = doc.data().nomealuno;
+    if (!snapshot.empty) {
+        snapshot.forEach(doc => {
+            const nomeAluno = doc.data().nomealuno;
+            const option = document.createElement("option");
+            option.value = nomeAluno;
+            option.textContent = nomeAluno;
+            nomeSelect.appendChild(option);
+        });
+    } else {
         const option = document.createElement("option");
-        option.value = nomeAluno;
-        option.textContent = nomeAluno;
+        option.value = "";
+        option.textContent = "Nenhum aluno encontrado";
         nomeSelect.appendChild(option);
-    });
-}
-
-// Função para carregar as eletivas
-async function carregarEletivas() {
-    const eletivasRef = collection(db, "eletiva");
-    const snapshot = await getDocs(eletivasRef);
-    const eletivaSelect = document.getElementById("eletiva");
-    eletivaSelect.innerHTML = ""; // Limpar as opções anteriores
-
-    snapshot.forEach(doc => {
-        const eletiva = doc.data().nomeEletiva;
-        const vagas = doc.data().vagas;
-        const option = document.createElement("option");
-        option.value = eletiva;
-        option.textContent = `${eletiva} (${vagas} vagas)`;
-        eletivaSelect.appendChild(option);
-    });
+    }
 }
 
 // Função para validar o nome e turma
@@ -118,7 +93,18 @@ window.onload = async () => {
     carregarTurmas();
     carregarEletivas();
     carregarInscricoes();
-    carregarNomes(); // Carregar os nomes dos alunos
+
+    // Event listener para carregar os alunos ao selecionar uma turma
+    document.getElementById("turma").addEventListener("change", async () => {
+        const turmaSelecionada = document.getElementById("turma").value;
+        if (turmaSelecionada) {
+            await carregarNomes(turmaSelecionada);
+            document.getElementById("eletiva").disabled = true;
+            document.getElementById("inscrever-btn").disabled = true;
+        } else {
+            document.getElementById("nome").disabled = true;
+        }
+    });
 
     // Event listener para validar nome e habilitar a seleção da eletiva
     document.getElementById("nome").addEventListener("change", async () => {
