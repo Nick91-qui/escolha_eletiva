@@ -1,20 +1,45 @@
 const { useState, useEffect } = React;
+const { initializeApp } = firebase;
+const { getFirestore, collection, addDoc, getDocs } = firebase.firestore;
 
-const eletivasIniciais = [
-  { nome: "Arte Digital", vagas: 1 },
-  { nome: "Astronomia", vagas: 1 },
-  { nome: "Biotecnologia", vagas: 3 },
-  { nome: "Cinema e Sociedade", vagas: 2 },
-  { nome: "Design de Jogos", vagas: 3 },
-  { nome: "Empreendedorismo", vagas: 2 },
-  { nome: "Escrita Criativa", vagas: 3 },
-  { nome: "Fotografia", vagas: 2 },
-  { nome: "Inteligência Artificial", vagas: 3 },
-  { nome: "Música", vagas: 3 },
-  { nome: "Nutrição e Saúde", vagas: 3 },
-  { nome: "Química Experimental", vagas: 2 },
-  { nome: "Robótica", vagas: 2 }
-];
+const firebaseConfig = {
+  apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
+  authDomain: "device-streaming-9e3b934a.firebaseapp.com",
+  projectId: "device-streaming-9e3b934a",
+  storageBucket: "device-streaming-9e3b934a.firebasestorage.app",
+  messagingSenderId: "608328398854",
+  appId: "1:608328398854:web:706cf69b6dcb751930ab87"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function handleInscricao(turmaSelecionada, alunoNome, eletivaSelecionada) {
+  try {
+    await addDoc(collection(db, "inscricoes"), {
+      turma: turmaSelecionada,
+      nome: alunoNome,
+      eletiva: eletivaSelecionada,
+    });
+    console.log("Inscrição adicionada com sucesso!");
+  } catch (e) {
+    console.error("Erro ao adicionar inscrição: ", e);
+  }
+}
+
+async function fetchInscricoes() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "inscricoes"));
+    let inscricoesList = [];
+    querySnapshot.forEach((doc) => {
+      inscricoesList.push(doc.data());
+    });
+    return inscricoesList;
+  } catch (e) {
+    console.error("Erro ao recuperar inscrições: ", e);
+    return [];
+  }
+}
 
 function InscricaoEletivas() {
   const [turmas] = useState(["1A", "1B", "2A", "2B", "3A", "3B"]);
@@ -26,11 +51,27 @@ function InscricaoEletivas() {
   const [erroNome, setErroNome] = useState("");
   const [erroInscricao, setErroInscricao] = useState("");
   const [nomeValido, setNomeValido] = useState(false);
-  const [eletivas, setEletivas] = useState(eletivasIniciais);
+  const [eletivas] = useState([
+    { nome: "Arte Digital", vagas: 3 },
+    { nome: "Astronomia", vagas: 2 },
+    { nome: "Biotecnologia", vagas: 3 },
+    { nome: "Cinema e Sociedade", vagas: 2 },
+    { nome: "Design de Jogos", vagas: 3 },
+    { nome: "Empreendedorismo", vagas: 2 },
+    { nome: "Escrita Criativa", vagas: 3 },
+    { nome: "Fotografia", vagas: 2 },
+    { nome: "Inteligência Artificial", vagas: 3 },
+    { nome: "Música", vagas: 3 },
+    { nome: "Nutrição e Saúde", vagas: 3 },
+    { nome: "Química Experimental", vagas: 2 },
+    { nome: "Robótica", vagas: 2 }
+  ]);
 
   useEffect(() => {
-    // Recupera inscrições do Firestore quando o componente for carregado
-    fetchInscricoes();
+    // Chama a função fetchInscricoes para obter inscrições do Firestore
+    fetchInscricoes().then((result) => {
+      setInscricoes(result);
+    });
   }, []);
 
   const verificarNome = (nome) => {
@@ -45,7 +86,7 @@ function InscricaoEletivas() {
     }
   };
 
-  const handleInscricao = () => {
+  const handleInscricaoClick = () => {
     if (turmaSelecionada && alunoNome && eletivaSelecionada && nomeValido) {
       const alunoJaInscrito = inscricoes.some(({ nome }) => nome === alunoNome);
       if (alunoJaInscrito) {
@@ -62,7 +103,6 @@ function InscricaoEletivas() {
       setErroInscricao("");
       setInscricoes([...inscricoes, { turma: turmaSelecionada, nome: alunoNome, eletiva: eletivaSelecionada }]);
 
-      // Chama a função para adicionar a inscrição no Firestore
       handleInscricao(turmaSelecionada, alunoNome, eletivaSelecionada);
 
       setAlunoNome("");
@@ -72,84 +112,52 @@ function InscricaoEletivas() {
   };
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="card">
-        <div className="card-content">
-          <h2>Inscrição nas Eletivas</h2>
-          <select onChange={(e) => setTurmaSelecionada(e.target.value)} value={turmaSelecionada}>
-            <option value="">Selecione sua turma</option>
-            {turmas.map((turma) => (
-              <option key={turma} value={turma}>{turma}</option>
-            ))}
-          </select>
+    <div>
+      <h2>Inscrição nas Eletivas</h2>
+      {/* Formulário de inscrição */}
+      <select onChange={(e) => setTurmaSelecionada(e.target.value)} value={turmaSelecionada}>
+        <option value="">Selecione sua turma</option>
+        {turmas.map((turma) => (
+          <option key={turma} value={turma}>{turma}</option>
+        ))}
+      </select>
 
-          {turmaSelecionada && (
-            <input
-              type="text"
-              placeholder="Digite seu nome completo"
-              value={alunoNome}
-              onChange={(e) => verificarNome(e.target.value)}
-            />
-          )}
+      {turmaSelecionada && (
+        <input
+          type="text"
+          placeholder="Digite seu nome completo"
+          value={alunoNome}
+          onChange={(e) => verificarNome(e.target.value)}
+        />
+      )}
 
-          {erroNome && <p className="error">{erroNome}</p>}
-          {erroInscricao && <p className="error">{erroInscricao}</p>}
+      {erroNome && <p>{erroNome}</p>}
+      {erroInscricao && <p>{erroInscricao}</p>}
 
-          {nomeValido && !erroInscricao && (
-            <select onChange={(e) => setEletivaSelecionada(e.target.value)} value={eletivaSelecionada}>
-              <option value="">Selecione uma eletiva</option>
-              {eletivas.map(({ nome, vagas }) => (
-                <option key={nome} value={nome} disabled={vagas === 0}>
-                  {nome} ({vagas} vagas)
-                </option>
-              ))}
-            </select>
-          )}
+      {nomeValido && !erroInscricao && (
+        <select onChange={(e) => setEletivaSelecionada(e.target.value)} value={eletivaSelecionada}>
+          <option value="">Selecione uma eletiva</option>
+          {eletivas.map(({ nome, vagas }) => (
+            <option key={nome} value={nome} disabled={vagas === 0}>
+              {nome} ({vagas} vagas)
+            </option>
+          ))}
+        </select>
+      )}
 
-          <button onClick={handleInscricao} disabled={!turmaSelecionada || !nomeValido || !eletivaSelecionada}>
-            Inscrever-se
-          </button>
-        </div>
-      </div>
+      <button onClick={handleInscricaoClick} disabled={!turmaSelecionada || !nomeValido || !eletivaSelecionada}>
+        Inscrever-se
+      </button>
 
-      <div className="card">
-        <div className="card-content">
-          <h2>Lista de Eletivas</h2>
-          <ul className="eletivas-lista">
-            {eletivas.map(({ nome, vagas }) => (
-              <li key={nome} className={vagas === 0 ? "esgotado" : ""}>
-                {nome} - {vagas} vagas
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="card">
-        <div className="card-content">
-          <h2>Lista de Inscritos</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Eletiva</th>
-                <th>Nome</th>
-                <th>Turma</th>
-              </tr>
-            </thead>
-            <tbody>
-              {inscricoes.map(({ eletiva, nome, turma }, index) => (
-                <tr key={index}>
-                  <td>{eletiva}</td>
-                  <td>{nome}</td>
-                  <td>{turma}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Lista de inscritos */}
+      <h3>Lista de Inscritos</h3>
+      <ul>
+        {inscricoes.map(({ nome, turma, eletiva }, index) => (
+          <li key={index}>{nome} - {turma} - {eletiva}</li>
+        ))}
+      </ul>
     </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("app")).render(<InscricaoEletivas />);
+ReactDOM.render(<InscricaoEletivas />, document.getElementById("app"));
