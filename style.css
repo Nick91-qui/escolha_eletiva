@@ -1,54 +1,26 @@
+/* Definindo as cores padrão */
 body {
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f4f9;
-}
-
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #F3F4F6; /* cor de fundo clara */
+  color: #333; /* texto escuro */
 }
 
 h1 {
-  text-align: center;
-  color: #333;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  margin-bottom: 5px;
-}
-
-input, select, button {
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  color: #0066cc; /* azul da escola */
 }
 
 button {
-  background-color: #007bff;
+  background-color: #cc0000; /* vermelho da escola */
   color: white;
+  border: none;
+  padding: 10px 20px;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #b30000; /* tom mais escuro de vermelho */
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  margin-bottom: 10px;
+#app {
+  margin: 20px;
 }
