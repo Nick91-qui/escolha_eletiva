@@ -1,95 +1,54 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  background-color: #f4f4f9;
 }
 
-#app {
-  width: 90%;
+.container {
   max-width: 600px;
-}
-
-.card {
-  background: white;
+  margin: 0 auto;
   padding: 20px;
-  border-radius: 10px;
+  background-color: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
 }
 
-.card-content {
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
-h2 {
-  color: #003366;
+label {
+  margin-bottom: 5px;
 }
 
-select, input {
+input, select, button {
   padding: 10px;
+  margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
 button {
-  background-color: #003366;
+  background-color: #007bff;
   color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
 }
 
 button:hover {
-  background-color: #0055aa;
+  background-color: #0056b3;
 }
 
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.error {
-  color: red;
-  font-size: 14px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background-color: #cc0000;
-  color: white;
-}
-
-.eletivas-lista {
+ul {
   list-style-type: none;
   padding: 0;
 }
 
-.eletivas-lista li {
-  padding: 8px;
-  border-bottom: 1px solid #ccc;
+li {
+  margin-bottom: 10px;
 }
-
-.eletivas-lista .esgotado {
-  color: red;
-  font-weight: bold;
-}
-
