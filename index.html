@@ -12,5 +12,54 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script type="text/babel" src="app.js"></script>
+  <script type="module">
+  // Importa as funções que você precisa do SDK
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+
+  // Configuração do Firebase (substitua pelos seus dados reais)
+  const firebaseConfig = {
+    apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
+    authDomain: "device-streaming-9e3b934a.firebaseapp.com",
+    projectId: "device-streaming-9e3b934a",
+    storageBucket: "device-streaming-9e3b934a.firebasestorage.app",
+    messagingSenderId: "608328398854",
+    appId: "1:608328398854:web:706cf69b6dcb751930ab87"
+  };
+
+  // Inicializa o Firebase
+  const app = initializeApp(firebaseConfig);
+
+  // Obtém o Firestore
+  const db = getFirestore(app);
+
+  // Função para adicionar inscrição no Firestore
+  async function handleInscricao(turmaSelecionada, alunoNome, eletivaSelecionada) {
+    try {
+      // Adiciona o documento na coleção de "inscricoes"
+      await addDoc(collection(db, "inscricoes"), {
+        turma: turmaSelecionada,
+        nome: alunoNome,
+        eletiva: eletivaSelecionada,
+      });
+      console.log("Inscrição adicionada com sucesso!");
+    } catch (e) {
+      console.error("Erro ao adicionar inscrição: ", e);
+    }
+  }
+
+  // Função para recuperar as inscrições do Firestore
+  async function fetchInscricoes() {
+    try {
+      const querySnapshot = await getDocs(collection(db, "inscricoes"));
+      querySnapshot.forEach((doc) => {
+        console.log(doc.id, " => ", doc.data());
+      });
+    } catch (e) {
+      console.error("Erro ao recuperar inscrições: ", e);
+    }
+  }
+</script>
+
 </body>
 </html>
