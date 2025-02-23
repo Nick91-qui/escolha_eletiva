@@ -1,32 +1,35 @@
-<form id="inscricao-form">
-    <label for="nome">Nome:</label>
-    <select id="nome" required>
-        <option value="">Selecione o nome</option>
-        <!-- Os nomes dos alunos serão preenchidos aqui pelo JavaScript -->
-    </select>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscrição Eletivas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Inscrição para Eletivas</h1>
 
-    <label for="turma">Turma:</label>
-    <select id="turma" required>
-        <!-- As turmas serão carregadas aqui -->
-    </select>
+    <form id="inscricao-form">
+        <label for="turma">Turma:</label>
+        <select id="turma" required>
+            <option value="">Selecione a turma</option>
+            <!-- As turmas serão carregadas aqui -->
+        </select>
 
-    <label for="eletiva">Eletiva:</label>
-    <select id="eletiva" disabled required>
-        <!-- As eletivas serão carregadas aqui -->
-    </select>
+        <label for="nome">Nome:</label>
+        <select id="nome" disabled required>
+            <option value="">Selecione o nome</option>
+            <!-- Os nomes dos alunos serão preenchidos aqui pelo JavaScript -->
+        </select>
 
-    <button type="submit" id="inscrever-btn" disabled>Inscrever</button>
-</form>
+        <label for="eletiva">Eletiva:</label>
+        <select id="eletiva" disabled required>
+            <!-- As eletivas serão carregadas aqui -->
+        </select>
 
-<table id="inscricoes-list">
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Turma</th>
-            <th>Eletiva</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- As inscrições serão carregadas aqui -->
-    </tbody>
-</table>
+        <button type="submit" id="inscrever-btn" disabled>Inscrever</button>
+    </form>
+
+    <h2>Inscrições Realizadas</h2>
+    <table id="inscricoes-list">
+       
