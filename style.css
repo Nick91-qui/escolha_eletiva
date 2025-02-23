@@ -77,3 +77,19 @@ th {
   background-color: #cc0000;
   color: white;
 }
+
+.eletivas-lista {
+  list-style-type: none;
+  padding: 0;
+}
+
+.eletivas-lista li {
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+}
+
+.eletivas-lista .esgotado {
+  color: red;
+  font-weight: bold;
+}
+
