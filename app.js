@@ -1,7 +1,8 @@
-const { useState, useEffect } = React;
-const { initializeApp } = firebase;
-const { getFirestore, collection, addDoc, getDocs } = firebase.firestore;
+import React, { useState } from 'react';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
+// Configuração do Firebase (substitua pelos seus dados reais)
 const firebaseConfig = {
   apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
   authDomain: "device-streaming-9e3b934a.firebaseapp.com",
@@ -11,11 +12,16 @@ const firebaseConfig = {
   appId: "1:608328398854:web:706cf69b6dcb751930ab87"
 };
 
+// Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
+
+// Obtém o Firestore
 const db = getFirestore(app);
 
+// Função para adicionar inscrição no Firestore
 async function handleInscricao(turmaSelecionada, alunoNome, eletivaSelecionada) {
   try {
+    // Adiciona o documento na coleção de "inscricoes"
     await addDoc(collection(db, "inscricoes"), {
       turma: turmaSelecionada,
       nome: alunoNome,
@@ -27,137 +33,80 @@ async function handleInscricao(turmaSelecionada, alunoNome, eletivaSelecionada) 
   }
 }
 
+// Função para recuperar as inscrições do Firestore
 async function fetchInscricoes() {
   try {
     const querySnapshot = await getDocs(collection(db, "inscricoes"));
-    let inscricoesList = [];
+    const inscricoes = [];
     querySnapshot.forEach((doc) => {
-      inscricoesList.push(doc.data());
+      inscricoes.push(doc.data());
     });
-    return inscricoesList;
+    return inscricoes;
   } catch (e) {
     console.error("Erro ao recuperar inscrições: ", e);
-    return [];
   }
 }
 
-function InscricaoEletivas() {
-  const [turmas] = useState(["1A", "1B", "2A", "2B", "3A", "3B"]);
-  const [alunos] = useState({ "1A": ["Ana Silva", "Bruno Souza"], "1B": ["Carlos Mendes", "Daniela Lima"] });
-  const [turmaSelecionada, setTurmaSelecionada] = useState("");
-  const [alunoNome, setAlunoNome] = useState("");
-  const [eletivaSelecionada, setEletivaSelecionada] = useState("");
+// Componente principal do app (React)
+const InscricaoEletivas = () => {
+  const [turma, setTurma] = useState('');
+  const [aluno, setAluno] = useState('');
+  const [eletiva, setEletiva] = useState('');
   const [inscricoes, setInscricoes] = useState([]);
-  const [erroNome, setErroNome] = useState("");
-  const [erroInscricao, setErroInscricao] = useState("");
-  const [nomeValido, setNomeValido] = useState(false);
-  const [eletivas] = useState([
-    { nome: "Arte Digital", vagas: 3 },
-    { nome: "Astronomia", vagas: 2 },
-    { nome: "Biotecnologia", vagas: 3 },
-    { nome: "Cinema e Sociedade", vagas: 2 },
-    { nome: "Design de Jogos", vagas: 3 },
-    { nome: "Empreendedorismo", vagas: 2 },
-    { nome: "Escrita Criativa", vagas: 3 },
-    { nome: "Fotografia", vagas: 2 },
-    { nome: "Inteligência Artificial", vagas: 3 },
-    { nome: "Música", vagas: 3 },
-    { nome: "Nutrição e Saúde", vagas: 3 },
-    { nome: "Química Experimental", vagas: 2 },
-    { nome: "Robótica", vagas: 2 }
-  ]);
 
-  useEffect(() => {
-    // Chama a função fetchInscricoes para obter inscrições do Firestore
-    fetchInscricoes().then((result) => {
-      setInscricoes(result);
-    });
-  }, []);
-
-  const verificarNome = (nome) => {
-    setAlunoNome(nome);
-    setErroInscricao("");
-    if (alunos[turmaSelecionada]?.includes(nome)) {
-      setErroNome("");
-      setNomeValido(true);
-    } else {
-      setErroNome("Nome não encontrado na turma. Verifique se digitou corretamente.");
-      setNomeValido(false);
-    }
-  };
-
-  const handleInscricaoClick = () => {
-    if (turmaSelecionada && alunoNome && eletivaSelecionada && nomeValido) {
-      const alunoJaInscrito = inscricoes.some(({ nome }) => nome === alunoNome);
-      if (alunoJaInscrito) {
-        setErroInscricao("Você já está inscrito em uma eletiva e não pode se inscrever novamente.");
-        return;
-      }
-
-      const eletiva = eletivas.find(e => e.nome === eletivaSelecionada);
-      if (eletiva && eletiva.vagas === 0) {
-        setErroInscricao("Esta eletiva não tem mais vagas disponíveis.");
-        return;
-      }
-
-      setErroInscricao("");
-      setInscricoes([...inscricoes, { turma: turmaSelecionada, nome: alunoNome, eletiva: eletivaSelecionada }]);
-
-      handleInscricao(turmaSelecionada, alunoNome, eletivaSelecionada);
-
-      setAlunoNome("");
-      setEletivaSelecionada("");
-      setNomeValido(false);
-    }
+  // Função para adicionar inscrição
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    await handleInscricao(turma, aluno, eletiva);
+    // Atualiza a lista de inscrições após o envio
+    const novasInscricoes = await fetchInscricoes();
+    setInscricoes(novasInscricoes);
   };
 
   return (
     <div>
-      <h2>Inscrição nas Eletivas</h2>
-      {/* Formulário de inscrição */}
-      <select onChange={(e) => setTurmaSelecionada(e.target.value)} value={turmaSelecionada}>
-        <option value="">Selecione sua turma</option>
-        {turmas.map((turma) => (
-          <option key={turma} value={turma}>{turma}</option>
-        ))}
-      </select>
+      <h1>Inscrição nas Eletivas</h1>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Nome do Aluno:</label>
+          <input
+            type="text"
+            value={aluno}
+            onChange={(e) => setAluno(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Turma:</label>
+          <input
+            type="text"
+            value={turma}
+            onChange={(e) => setTurma(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Eletiva:</label>
+          <input
+            type="text"
+            value={eletiva}
+            onChange={(e) => setEletiva(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Inscrever</button>
+      </form>
 
-      {turmaSelecionada && (
-        <input
-          type="text"
-          placeholder="Digite seu nome completo"
-          value={alunoNome}
-          onChange={(e) => verificarNome(e.target.value)}
-        />
-      )}
-
-      {erroNome && <p>{erroNome}</p>}
-      {erroInscricao && <p>{erroInscricao}</p>}
-
-      {nomeValido && !erroInscricao && (
-        <select onChange={(e) => setEletivaSelecionada(e.target.value)} value={eletivaSelecionada}>
-          <option value="">Selecione uma eletiva</option>
-          {eletivas.map(({ nome, vagas }) => (
-            <option key={nome} value={nome} disabled={vagas === 0}>
-              {nome} ({vagas} vagas)
-            </option>
-          ))}
-        </select>
-      )}
-
-      <button onClick={handleInscricaoClick} disabled={!turmaSelecionada || !nomeValido || !eletivaSelecionada}>
-        Inscrever-se
-      </button>
-
-      {/* Lista de inscritos */}
-      <h3>Lista de Inscritos</h3>
+      <h2>Inscrições Realizadas:</h2>
       <ul>
-        {inscricoes.map(({ nome, turma, eletiva }, index) => (
-          <li key={index}>{nome} - {turma} - {eletiva}</li>
+        {inscricoes.map((inscricao, index) => (
+          <li key={index}>
+            {inscricao.nome} - {inscricao.turma} - {inscricao.eletiva}
+          </li>
         ))}
       </ul>
     </div>
   );
-}
+};
 
-ReactDOM.render(<InscricaoEletivas />, document.getElementById("app"));
+export default InscricaoEletivas;
