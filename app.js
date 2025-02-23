@@ -1,4 +1,4 @@
-// Não precisa do require, use diretamente as variáveis globais do Firebase
+// Inicialize o Firebase com a versão UMD
 const app = firebase.initializeApp({
   apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
   authDomain: "device-streaming-9e3b934a.firebaseapp.com",
@@ -8,6 +8,7 @@ const app = firebase.initializeApp({
   appId: "1:608328398854:web:706cf69b6dcb751930ab87"
 });
 
+// Utilize a versão compatível com o Firestore UMD
 const db = firebase.firestore();
 
 // Função para inscrever aluno em uma eletiva
@@ -21,7 +22,7 @@ async function inscreverAluno(alunoId, eletivaId) {
     console.log("Eletiva não encontrada");
     return;
   }
-  
+
   const vagasDisponiveis = eletivaDoc.data().vagas;
   if (vagasDisponiveis <= 0) {
     console.log("Não há vagas disponíveis para essa eletiva");
