@@ -1,26 +1,52 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inscrição Eletivas</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscrição Eletivas</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="app"></div>
-  
-  <!-- Adicionar os scripts CDN do React e Firebase UMD -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  
-  <!-- Versão UMD do Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.1.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore-compat.js"></script>
-  
-  <!-- Babel para compilar JS -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <header>
+        <h1>Inscrição Eletivas</h1>
+    </header>
+    <main>
+        <div class="form-container">
+            <form id="inscricao-form">
+                <label for="turma">Selecione sua Turma:</label>
+                <select id="turma" name="turma">
+                    <!-- Turmas serão carregadas dinamicamente -->
+                </select>
 
-  <!-- Código JavaScript com Babel -->
-  <script type="text/babel" src="app.js"></script>
+                <label for="nome">Digite seu Nome:</label>
+                <input type="text" id="nome" name="nome" required>
+
+                <label for="eletiva">Selecione sua Eletiva:</label>
+                <select id="eletiva" name="eletiva" disabled>
+                    <!-- Eletivas serão carregadas após validação do nome -->
+                </select>
+
+                <button type="submit" id="inscrever-btn" disabled>Inscrever</button>
+            </form>
+
+            <h2>Inscrições Realizadas</h2>
+            <table id="inscricoes-list">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Turma</th>
+                        <th>Eletiva</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Inscrições serão carregadas dinamicamente -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
