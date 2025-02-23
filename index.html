@@ -1,53 +1,32 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscrição Eletivas</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <header>
-        <h1>Inscrição Eletivas</h1>
-    </header>
-    <main>
-        <div class="form-container">
-            <form id="inscricao-form">
-                <label for="turma">Selecione sua Turma:</label>
-                <select id="turma" name="turma">
-                    <!-- Turmas serão carregadas dinamicamente -->
-                </select>
+<form id="inscricao-form">
+    <label for="nome">Nome:</label>
+    <select id="nome" required>
+        <option value="">Selecione o nome</option>
+        <!-- Os nomes dos alunos serão preenchidos aqui pelo JavaScript -->
+    </select>
 
-                <label for="nome">Digite seu Nome:</label>
-                <input type="text" id="nome" name="nome" required>
+    <label for="turma">Turma:</label>
+    <select id="turma" required>
+        <!-- As turmas serão carregadas aqui -->
+    </select>
 
-                <label for="eletiva">Selecione sua Eletiva:</label>
-                <select id="eletiva" name="eletiva" disabled>
-                    <!-- Eletivas serão carregadas após validação do nome -->
-                </select>
+    <label for="eletiva">Eletiva:</label>
+    <select id="eletiva" disabled required>
+        <!-- As eletivas serão carregadas aqui -->
+    </select>
 
-                <button type="submit" id="inscrever-btn" disabled>Inscrever</button>
-            </form>
+    <button type="submit" id="inscrever-btn" disabled>Inscrever</button>
+</form>
 
-            <h2>Inscrições Realizadas</h2>
-            <table id="inscricoes-list">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Turma</th>
-                        <th>Eletiva</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Inscrições serão carregadas dinamicamente -->
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-    <script src="app.js"></script>
-</body>
-</html>
+<table id="inscricoes-list">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Turma</th>
+            <th>Eletiva</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- As inscrições serão carregadas aqui -->
+    </tbody>
+</table>
