@@ -1,3 +1,6 @@
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, getDocs, query, where, addDoc } from "firebase/firestore";
+
 // Configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
@@ -9,13 +12,13 @@ const firebaseConfig = {
 };
 
 // Inicialize o Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // Função para carregar as turmas
 async function carregarTurmas() {
-    const turmasRef = db.collection("alunos");
-    const snapshot = await turmasRef.get();
+    const turmasRef = collection(db, "alunos");
+    const snapshot = await getDocs(turmasRef);
     const turmaSelect = document.getElementById("turma");
 
     snapshot.forEach(doc => {
@@ -29,8 +32,8 @@ async function carregarTurmas() {
 
 // Função para carregar as eletivas
 async function carregarEletivas() {
-    const eletivasRef = db.collection("eletiva");
-    const snapshot = await eletivasRef.get();
+    const eletivasRef = collection(db, "eletiva");
+    const snapshot = await getDocs(eletivasRef);
     const eletivaSelect = document.getElementById("eletiva");
     eletivaSelect.innerHTML = ""; // Limpar as opções anteriores
 
@@ -46,12 +49,11 @@ async function carregarEletivas() {
 
 // Função para validar o nome
 async function validarNome(nome, turma) {
-    const alunosRef = db.collection("alunos");
-    const querySnapshot = await alunosRef.where("turma", "==", turma).get();
+    const alunosRef = collection(db, "alunos");
+    const querySnapshot = await getDocs(query(alunosRef, where("turma", "==", turma)));
 
     let nomeValido = false;
 
-    // Verifica se algum aluno corresponde à turma e nome
     querySnapshot.forEach(doc => {
         const aluno = doc.data();
         
@@ -59,14 +61,8 @@ async function validarNome(nome, turma) {
             const nomeAluno = aluno.nomealuno && aluno.nomealuno.trim().toLowerCase();
             const turmaAluno = aluno.turma && aluno.turma.trim().toLowerCase();
 
-            // Verificação para garantir que temos os dados necessários
-            if (nomeAluno && turmaAluno) {
-                console.log("Aluno encontrado:", nomeAluno, turmaAluno); // Depuração para ver os dados
-                if (nomeAluno === nome.trim().toLowerCase() && turmaAluno === turma.trim().toLowerCase()) {
-                    nomeValido = true;
-                }
-            } else {
-                console.log("Dados do aluno incompletos:", aluno); // Depuração
+            if (nomeAluno === nome.trim().toLowerCase() && turmaAluno === turma.trim().toLowerCase()) {
+                nomeValido = true;
             }
         }
     });
@@ -74,25 +70,22 @@ async function validarNome(nome, turma) {
     return nomeValido;
 }
 
-
-
-
 // Função para inscrever o aluno
 async function inscreverAluno(nome, turma, eletiva) {
-    const inscricaoRef = db.collection("inscricao");
+    const inscricaoRef = collection(db, "inscricao");
     const novaInscricao = {
         nomeAluno: nome,
         turma: turma,
         nomeEletiva: eletiva
     };
-    await inscricaoRef.add(novaInscricao);
+    await addDoc(inscricaoRef, novaInscricao);
     alert("Inscrição realizada com sucesso!");
 }
 
 // Função para carregar as inscrições
 async function carregarInscricoes() {
-    const inscricoesRef = db.collection("inscricao");
-    const snapshot = await inscricoesRef.get();
+    const inscricoesRef = collection(db, "inscricao");
+    const snapshot = await getDocs(inscricoesRef);
     const listaInscricoes = document.getElementById("inscricoes-list").getElementsByTagName('tbody')[0];
 
     listaInscricoes.innerHTML = ""; // Limpar as inscrições anteriores
