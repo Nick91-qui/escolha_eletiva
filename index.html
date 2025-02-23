@@ -5,132 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inscrição Eletivas</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js"></script>
 </head>
 <body>
-  <div id="app"></div>
+  <div class="container">
+    <h1>Inscrição nas Eletivas</h1>
 
-  <!-- React e ReactDOM -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Formulário de Inscrição -->
+    <form id="inscricaoForm">
+      <label for="alunoNome">Nome do Aluno:</label>
+      <input type="text" id="alunoNome" name="alunoNome" required>
 
-  <!-- Babel para compilar JSX -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+      <label for="turma">Turma:</label>
+      <input type="text" id="turma" name="turma" required>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+      <label for="eletiva">Eletiva:</label>
+      <select id="eletiva" name="eletiva" required>
+        <option value="Eletiva1">Eletiva 1</option>
+        <option value="Eletiva2">Eletiva 2</option>
+        <option value="Eletiva3">Eletiva 3</option>
+      </select>
 
-    // Configuração do Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
-      authDomain: "device-streaming-9e3b934a.firebaseapp.com",
-      projectId: "device-streaming-9e3b934a",
-      storageBucket: "device-streaming-9e3b934a.firebasestorage.app",
-      messagingSenderId: "608328398854",
-      appId: "1:608328398854:web:706cf69b6dcb751930ab87"
-    };
+      <button type="submit">Inscrever</button>
+    </form>
 
-    // Inicializa o Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    <!-- Exibição das Inscrições e Vagas -->
+    <h2>Inscrições Recentes</h2>
+    <ul id="inscricoesList"></ul>
 
-    // Função para adicionar inscrição no Firestore
-    async function handleInscricao(turmaSelecionada, alunoNome, eletivaSelecionada) {
-      try {
-        await addDoc(collection(db, "inscricoes"), {
-          turma: turmaSelecionada,
-          nome: alunoNome,
-          eletiva: eletivaSelecionada,
-        });
-        console.log("Inscrição adicionada com sucesso!");
-      } catch (e) {
-        console.error("Erro ao adicionar inscrição: ", e);
-      }
-    }
+    <h2>Vagas Restantes</h2>
+    <ul id="vagasList">
+      <li>Eletiva 1: <span id="vagasEletiva1"></span> vagas</li>
+      <li>Eletiva 2: <span id="vagasEletiva2"></span> vagas</li>
+      <li>Eletiva 3: <span id="vagasEletiva3"></span> vagas</li>
+    </ul>
+  </div>
 
-    // Função para recuperar as inscrições do Firestore
-    async function fetchInscricoes() {
-      try {
-        const querySnapshot = await getDocs(collection(db, "inscricoes"));
-        const inscricoes = [];
-        querySnapshot.forEach((doc) => {
-          inscricoes.push(doc.data());
-        });
-        return inscricoes;
-      } catch (e) {
-        console.error("Erro ao recuperar inscrições: ", e);
-      }
-    }
-  </script>
-
-  <!-- Script do app.js com React -->
-  <script type="text/babel">
-    // Componente React
-    const { useState } = React;
-
-    const InscricaoEletivas = () => {
-      const [turma, setTurma] = useState('');
-      const [aluno, setAluno] = useState('');
-      const [eletiva, setEletiva] = useState('');
-      const [inscricoes, setInscricoes] = useState([]);
-
-      const handleSubmit = async (event) => {
-        event.preventDefault();
-        await handleInscricao(turma, aluno, eletiva);
-        const novasInscricoes = await fetchInscricoes();
-        setInscricoes(novasInscricoes);
-      };
-
-      return (
-        <div>
-          <h1>Inscrição nas Eletivas</h1>
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label>Nome do Aluno:</label>
-              <input
-                type="text"
-                value={aluno}
-                onChange={(e) => setAluno(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label>Turma:</label>
-              <input
-                type="text"
-                value={turma}
-                onChange={(e) => setTurma(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label>Eletiva:</label>
-              <input
-                type="text"
-                value={eletiva}
-                onChange={(e) => setEletiva(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit">Inscrever</button>
-          </form>
-
-          <h2>Inscrições Realizadas:</h2>
-          <ul>
-            {inscricoes.map((inscricao, index) => (
-              <li key={index}>
-                {inscricao.nome} - {inscricao.turma} - {inscricao.eletiva}
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
-    };
-
-    // Renderiza o componente React no DOM
-    ReactDOM.render(<InscricaoEletivas />, document.getElementById('app'));
-  </script>
-
+  <script src="app.js"></script>
 </body>
 </html>
