@@ -27,7 +27,8 @@ async function carregarNomes(turmaSelecionada) {
     const alunosRef = collection(db, "alunos");
     const snapshot = await getDocs(query(alunosRef, where("turma", "==", turmaSelecionada)));
     const nomeSelect = document.getElementById("nome");
-    nomeSelect.innerHTML = ""; // Limpar as opções anteriores
+    
+    nomeSelect.innerHTML = "<option value=''>Selecione o aluno</option>"; // Resetar opções
     nomeSelect.disabled = false; // Habilitar a seleção de nome
 
     if (!snapshot.empty) {
@@ -43,6 +44,7 @@ async function carregarNomes(turmaSelecionada) {
         option.value = "";
         option.textContent = "Nenhum aluno encontrado";
         nomeSelect.appendChild(option);
+        nomeSelect.disabled = true; // Se não houver alunos, desabilita o campo novamente
     }
 }
 
@@ -114,6 +116,8 @@ async function carregarEletivas() {
         option.textContent = `${dados.nomeEletiva} (${dados.vagas} vagas)`;
         eletivaSelect.appendChild(option);
     });
+
+    eletivaSelect.disabled = true; // Mantém o campo desativado até um nome ser selecionado
 }
 
 // Função para carregar as inscrições
