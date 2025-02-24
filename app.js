@@ -37,34 +37,39 @@ async function carregarTurmas() {
 
 carregarTurmas();
 
-// Habilitar campo de eletivas ao digitar o nome corretamente
-nomeInput.addEventListener("input", async () => {
-    const nomeDigitado = nomeInput.value.trim();
-    const turmaSelecionada = turmaSelect.value;
-    
-    if (nomeDigitado && turmaSelecionada) {
-        const q = query(collection(db, "alunos"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
-        const querySnapshot = await getDocs(q);
+let timeout;
 
-        if (!querySnapshot.empty) {
-            const alunoData = querySnapshot.docs[0].data();
-            if (!alunoData.inscrito) {
-                eletivaSelect.disabled = false;
-                inscreverBtn.disabled = false;
-                carregarEletivas();
+nomeInput.addEventListener("input", async () => {
+    clearTimeout(timeout); // Limpa o timeout anterior
+    timeout = setTimeout(async () => { // Cria um novo timeout
+        const nomeDigitado = nomeInput.value.trim();
+        const turmaSelecionada = turmaSelect.value;
+
+        if (nomeDigitado && turmaSelecionada) {
+            const q = query(collection(db, "alunos"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                const alunoData = querySnapshot.docs[0].data();
+                if (!alunoData.inscrito) {
+                    eletivaSelect.disabled = false;
+                    inscreverBtn.disabled = false;
+                    carregarEletivas();
+                } else {
+                    alert("Você já está inscrito em uma eletiva!");
+                    nomeInput.value = "";
+                    eletivaSelect.disabled = true;
+                    inscreverBtn.disabled = true;
+                }
             } else {
-                alert("Você já está inscrito em uma eletiva!");
-                nomeInput.value = "";
+                alert("Nome não encontrado na turma selecionada!");
                 eletivaSelect.disabled = true;
                 inscreverBtn.disabled = true;
             }
-        } else {
-            alert("Nome não encontrado na turma selecionada!");
-            eletivaSelect.disabled = true;
-            inscreverBtn.disabled = true;
         }
-    }
+    }, 500); // Ajuste o tempo de espera (em milissegundos) conforme necessário
 });
+
 
 // Carregar eletivas
 async function carregarEletivas() {
