@@ -3,41 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscrição Eletivas</title>
+    <title>Inscrição para Eletivas</title>
     <link rel="stylesheet" href="style.css">
     <script type="module" src="app.js" defer></script>
 </head>
 <body>
-    <h1>Inscrição para Eletivas</h1>
 
-    <form id="inscricao-form">
-        <label for="turma">Turma:</label>
-        <select id="turma" required>
-            <option value="">Selecione a turma</option>
-        </select>
+    <header>
+        <h1>Inscrição para Eletivas</h1>
+    </header>
 
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" required placeholder="Digite seu nome">
-        
-        <label for="eletiva">Eletiva:</label>
-        <select id="eletiva" disabled required>
-            <option value="">Selecione a eletiva</option>
-        </select>
+    <main>
+        <section>
+            <form id="inscricao-form">
+                <label for="turma">Turma:</label>
+                <select id="turma" required>
+                    <option value="">Selecione a turma</option>
+                </select>
 
-        <button type="submit" id="inscrever-btn" disabled>Inscrever</button>
-    </form>
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" required placeholder="Digite seu nome completo">
+                
+                <label for="eletiva">Eletiva:</label>
+                <select id="eletiva" disabled required>
+                    <option value="">Selecione a eletiva</option>
+                </select>
 
-    <h2>Inscrições Realizadas</h2>
-    <table id="inscricoes-list">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Turma</th>
-                <th>Eletiva</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>  
+                <button type="submit" id="inscrever-btn" disabled>Inscrever-se</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Inscrições Realizadas</h2>
+            <table id="inscricoes-list">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Turma</th>
+                        <th>Eletiva</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Os dados das inscrições serão carregados aqui -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
 </body>
 </html>
