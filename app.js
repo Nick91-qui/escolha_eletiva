@@ -11,18 +11,6 @@ const firebaseConfig = {
     messagingSenderId: "608328398854",
     appId: "1:608328398854:web:706cf69b6dcb751930ab87"
 };
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, getDocs, updateDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
-// Configuração do Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyAqZBVNO_jIjah9v-Tp_Axy1LoMLkaINPU",
-    authDomain: "device-streaming-9e3b934a.firebaseapp.com",
-    projectId: "device-streaming-9e3b934a",
-    storageBucket: "device-streaming-9e3b934a.appspot.com",
-    messagingSenderId: "608328398854",
-    appId: "1:608328398854:web:706cf69b6dcb751930ab87"
-};
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -35,7 +23,7 @@ const inscreverBtn = document.getElementById("inscrever-btn");
 
 // Carregar turmas
 async function carregarTurmas() {
-    const alunosSnapshot = await getDocs(collection(db, "aluno"));
+    const alunosSnapshot = await getDocs(collection(db, "alunos"));
     const turmas = new Set();
     alunosSnapshot.forEach(doc => turmas.add(doc.data().turma));
     
@@ -55,7 +43,7 @@ nomeInput.addEventListener("input", async () => {
     const turmaSelecionada = turmaSelect.value;
     
     if (nomeDigitado && turmaSelecionada) {
-        const q = query(collection(db, "aluno"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
+        const q = query(collection(db, "alunos"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
@@ -108,11 +96,11 @@ document.getElementById("inscricao-form").addEventListener("submit", async (e) =
     }
 
     // Buscar aluno no Firebase
-    const q = query(collection(db, "aluno"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
+    const q = query(collection(db, "alunos"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
     const alunoSnapshot = await getDocs(q);
 
     if (!alunoSnapshot.empty) {
-        const alunoRef = doc(db, "aluno", alunoSnapshot.docs[0].id);
+        const alunoRef = doc(db, "alunos", alunoSnapshot.docs[0].id);
         const alunoData = alunoSnapshot.docs[0].data();
 
         if (!alunoData.inscrito) {
