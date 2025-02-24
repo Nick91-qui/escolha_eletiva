@@ -13,18 +13,14 @@
         <label for="turma">Turma:</label>
         <select id="turma" required>
             <option value="">Selecione a turma</option>
-            <!-- As turmas serão carregadas aqui -->
         </select>
 
         <label for="nome">Nome:</label>
-        <select id="nome" disabled required>
-            <option value="">Selecione o nome</option>
-            <!-- Os nomes dos alunos serão preenchidos aqui pelo JavaScript -->
-        </select>
-
+        <input type="text" id="nome" required placeholder="Digite seu nome">
+        
         <label for="eletiva">Eletiva:</label>
         <select id="eletiva" disabled required>
-            <!-- As eletivas serão carregadas aqui -->
+            <option value="">Selecione a eletiva</option>
         </select>
 
         <button type="submit" id="inscrever-btn" disabled>Inscrever</button>
@@ -40,7 +36,6 @@
             </tr>
         </thead>
         <tbody>
-            <!-- As inscrições serão carregadas aqui -->
         </tbody>
     </table>
 
