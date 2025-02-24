@@ -99,12 +99,15 @@ async function carregarEletivas() {
 
     eletivasSnapshot.forEach(doc => {
         const eletiva = doc.data();
-        if (eletiva.vagas > 0) {
-            const option = document.createElement("option");
-            option.value = doc.id;
-            option.textContent = `${eletiva.nomeEletiva} (${eletiva.vagas} vagas)`;
-            eletivaSelect.appendChild(option);
+        const option = document.createElement("option");
+        option.value = doc.id;
+        option.textContent = `${eletiva.nomeEletiva} (${eletiva.vagas} vagas)`;
+
+        if (eletiva.vagas === 0) {
+            option.disabled = true; // Desativar eletivas sem vagas
         }
+
+        eletivaSelect.appendChild(option);
     });
 }
 
