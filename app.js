@@ -178,9 +178,10 @@ async function carregarInscricoes() {
             if (aluno.inscrito) {
                 tbody.innerHTML += `
                     <tr>
-                        <td>${aluno.nomeAluno}</td>
-                        <td>${aluno.turma}</td>
                         <td>${aluno.eletiva}</td>
+                        <td>${aluno.turma}</td>
+                        <td>${aluno.nomeAluno}</td>
+                                               
                     </tr>`;
             }
         });
