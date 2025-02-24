@@ -15,12 +15,7 @@
 
     <main>
         <section>
-            <form id="inscricao-form">              
-               
-                <label for="eletiva">Eletiva:</label>
-                <select id="eletiva" disabled required>
-                    <option value="">Selecione a eletiva</option>
-                </select>
+            <form id="inscricao-form">                         
 
                 <label for="turma">Turma:</label>
                 <select id="turma" required>
@@ -28,7 +23,12 @@
                 </select>
 
                 <label for="nome">Nome:</label>
-                <input type="text" id="nome" required placeholder="Digite seu nome completo">             
+                <input type="text" id="nome" required placeholder="Digite seu nome completo"> 
+                
+                <label for="eletiva">Eletiva:</label>
+                <select id="eletiva" disabled required>
+                    <option value="">Selecione a eletiva</option>
+                </select>
 
                 <button type="submit" id="inscrever-btn" disabled>Inscrever-se</button>
             </form>
