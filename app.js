@@ -165,30 +165,36 @@ document.getElementById("inscricao-form").addEventListener("submit", async (e) =
     }
 });
 
-// Carregar inscrições na tabela
 async function carregarInscricoes() {
     const tbody = document.querySelector("#inscricoes-list tbody");
     tbody.innerHTML = "";
 
-    try {
-        const alunosSnapshot = await getDocs(collection(db, "alunos"));
+    const alunosSnapshot = await getDocs(collection(db, "alunos"));
+    const inscricoes = [];
 
-        alunosSnapshot.forEach(doc => {
-            const aluno = doc.data();
-            if (aluno.inscrito) {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${aluno.eletiva}</td>
-                        <td>${aluno.turma}</td>
-                        <td>${aluno.nomeAluno}</td>
-                                               
-                    </tr>`;
-            }
-        });
-    } catch (error) {
-        console.error("Erro ao carregar inscrições:", error);
-        alertSuave("Erro ao carregar inscrições.");
-    }
+    alunosSnapshot.forEach(doc => {
+        const aluno = doc.data();
+        if (aluno.inscrito) {
+            inscricoes.push({
+                eletiva: aluno.eletiva,
+                turma: aluno.turma,
+                nomeAluno: aluno.nomeAluno
+            });
+        }
+    });
+
+    // Ordenar por eletiva para melhor visualização (opcional)
+    inscricoes.sort((a, b) => a.eletiva.localeCompare(b.eletiva));
+
+    // Preencher a tabela com a nova ordem: Eletiva - Turma - Aluno
+    inscricoes.forEach(inscricao => {
+        tbody.innerHTML += `<tr>
+            <td>${inscricao.eletiva}</td>
+            <td>${inscricao.turma}</td>
+            <td>${inscricao.nomeAluno}</td>
+        </tr>`;
+    });
 }
+
 
 carregarInscricoes();
