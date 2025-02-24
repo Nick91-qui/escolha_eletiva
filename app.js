@@ -67,7 +67,7 @@ nomeInput.addEventListener("input", async () => {
                 inscreverBtn.disabled = true;
             }
         }
-    }, 500); // Ajuste o tempo de espera (em milissegundos) conforme necessário
+    }, 1500); // Ajuste o tempo de espera (em milissegundos) conforme necessário
 });
 
 
