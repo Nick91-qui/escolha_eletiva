@@ -22,32 +22,6 @@ async function carregarTurmas() {
     });
 }
 
-// Função para carregar os nomes dos alunos com base na turma selecionada
-async function carregarNomes(turmaSelecionada) {
-    const alunosRef = collection(db, "alunos");
-    const snapshot = await getDocs(query(alunosRef, where("turma", "==", turmaSelecionada)));
-    const nomeSelect = document.getElementById("nome");
-    
-    nomeSelect.innerHTML = "<option value=''>Selecione o aluno</option>"; // Resetar opções
-    nomeSelect.disabled = false; // Habilitar a seleção de nome
-
-    if (!snapshot.empty) {
-        snapshot.forEach(doc => {
-            const nomeAluno = doc.data().nomealuno;
-            const option = document.createElement("option");
-            option.value = nomeAluno;
-            option.textContent = nomeAluno;
-            nomeSelect.appendChild(option);
-        });
-    } else {
-        const option = document.createElement("option");
-        option.value = "";
-        option.textContent = "Nenhum aluno encontrado";
-        nomeSelect.appendChild(option);
-        nomeSelect.disabled = true; // Se não houver alunos, desabilita o campo novamente
-    }
-}
-
 // Função para validar o nome e turma
 async function validarNome(nome, turma) {
     const alunosRef = collection(db, "alunos");
@@ -117,7 +91,7 @@ async function carregarEletivas() {
         eletivaSelect.appendChild(option);
     });
 
-    eletivaSelect.disabled = true; // Mantém o campo desativado até um nome ser selecionado
+    eletivaSelect.disabled = true; // Mantém o campo desativado até um nome ser validado
 }
 
 // Função para carregar as inscrições
@@ -142,20 +116,15 @@ window.onload = async () => {
     carregarEletivas();
     carregarInscricoes();
 
-    // Event listener para carregar os alunos ao selecionar uma turma
-    document.getElementById("turma").addEventListener("change", async () => {
-        const turmaSelecionada = document.getElementById("turma").value;
-        if (turmaSelecionada) {
-            await carregarNomes(turmaSelecionada);
-            document.getElementById("eletiva").disabled = true;
-            document.getElementById("inscrever-btn").disabled = true;
-        } else {
-            document.getElementById("nome").disabled = true;
-        }
+    // Event listener para limpar nome e bloquear eletiva ao mudar de turma
+    document.getElementById("turma").addEventListener("change", () => {
+        document.getElementById("nome").value = "";
+        document.getElementById("eletiva").disabled = true;
+        document.getElementById("inscrever-btn").disabled = true;
     });
 
-    // Event listener para validar nome e habilitar a seleção da eletiva
-    document.getElementById("nome").addEventListener("change", async () => {
+    // Event listener para validar nome ao digitar
+    document.getElementById("nome").addEventListener("input", async () => {
         const nome = document.getElementById("nome").value;
         const turma = document.getElementById("turma").value;
 
@@ -163,7 +132,8 @@ window.onload = async () => {
             document.getElementById("eletiva").disabled = false;
             document.getElementById("inscrever-btn").disabled = false;
         } else {
-            alert("Nome não encontrado ou não corresponde à turma.");
+            document.getElementById("eletiva").disabled = true;
+            document.getElementById("inscrever-btn").disabled = true;
         }
     });
 
@@ -174,6 +144,10 @@ window.onload = async () => {
         const turma = document.getElementById("turma").value;
         const eletiva = document.getElementById("eletiva").value;
 
-        await inscreverAluno(nome, turma, eletiva);
+        if (await validarNome(nome, turma)) {
+            await inscreverAluno(nome, turma, eletiva);
+        } else {
+            alert("Nome não encontrado ou não corresponde à turma.");
+        }
     });
 };
