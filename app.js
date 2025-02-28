@@ -164,7 +164,7 @@ document.getElementById("inscricao-form").addEventListener("submit", async (e) =
         alertSuave("Erro ao realizar inscrição. Tente novamente.");
     }
 });
-
+/*
 async function carregarInscricoes() {
     const tbody = document.querySelector("#inscricoes-list tbody");
     tbody.innerHTML = "";
@@ -198,3 +198,4 @@ async function carregarInscricoes() {
 
 
 carregarInscricoes();
+*/
