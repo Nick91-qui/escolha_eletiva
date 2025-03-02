@@ -154,7 +154,7 @@ document.getElementById("inscricao-form").addEventListener("submit", async (e) =
                 }
 
                 alertSuave("Inscrição realizada com sucesso!");
-                carregarInscricoes();
+                //carregarInscricoes();
             } else {
                 alertSuave("Você já está inscrito!");
             }
