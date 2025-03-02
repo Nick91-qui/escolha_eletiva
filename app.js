@@ -164,7 +164,8 @@ document.getElementById("inscricao-form").addEventListener("submit", async (e) =
         alertSuave("Erro ao realizar inscrição. Tente novamente.");
     }
 });
-/*
+
+  /*
 async function carregarInscricoes() {
     const tbody = document.querySelector("#inscricoes-list tbody");
     tbody.innerHTML = "";
@@ -199,34 +200,4 @@ async function carregarInscricoes() {
 
 carregarInscricoes();
 */
-
-exports.updateSheetData = functions.https.onRequest(async (req, res) => {
-    try {
-      // ID da sua planilha
-      const spreadsheetId = '1eTdBl8wdTfPuZovUAyt2hdv2yHl93HdAMjdSRwtBgQI'; // Substitua com o ID da sua planilha
-  
-      // A planilha será atualizada na faixa de células A1:D521
-      const range = 'Página1!A1:D521';
-  
-      // Dados a serem atualizados, exemplo de atualização após inscrição
-      const values = [
-        // Você pode mapear o nome, turma e outras informações dos alunos
-        ['Nome do aluno', 'Turma', 'Eletiva', 'Status'] // Substitua pelos dados que você deseja
-      ];
-  
-      const response = await sheets.spreadsheets.values.update({
-        spreadsheetId,
-        range,
-        valueInputOption: 'RAW', // Define como os valores serão inseridos (RAW ou USER_ENTERED)
-        resource: {
-          values,
-        },
-      });
-  
-      res.status(200).send('Planilha atualizada com sucesso');
-    } catch (error) {
-      console.error('Erro ao atualizar a planilha:', error);
-      res.status(500).send('Erro ao atualizar a planilha');
-    }
-  });
   
