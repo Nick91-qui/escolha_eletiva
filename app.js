@@ -1,6 +1,6 @@
 // Importar as funções necessárias do SDK do Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 // Configuração do Firebase
 const firebaseConfig = {
@@ -134,27 +134,29 @@ document.getElementById("inscricao-form").addEventListener("submit", async (e) =
             const alunoData = alunoSnapshot.docs[0].data();
 
             if (!alunoData.inscrito) {
-                // Atualizar aluno
-                await updateDoc(alunoRef, {
-                    eletiva: eletivaSelecionada,
-                    inscrito: true
-                });
-
-                // Atualizar vagas da eletiva
+                // Buscar o nome da eletiva na coleção 'eletivas'
                 const eletivaRef = doc(db, "eletivas", eletivaSelecionada);
-                const eletivaDoc = await getDocs(query(collection(db, "eletivas"), where("__name__", "==", eletivaSelecionada)));
+                const eletivaSnapshot = await getDoc(eletivaRef);
 
-                if (!eletivaDoc.empty) {
-                    const eletivaData = eletivaDoc.docs[0].data();
-                    if (eletivaData.vagas > 0) {
-                        await updateDoc(eletivaRef, {
-                            vagas: eletivaData.vagas - 1
-                        });
-                    }
+                if (eletivaSnapshot.exists()) {
+                    const eletivaData = eletivaSnapshot.data();
+
+                    // Atualizar aluno com o nome da eletiva
+                    await updateDoc(alunoRef, {
+                        eletiva: eletivaData.nomeEletiva,  // Aqui está o nome da eletiva
+                        inscrito: true
+                    });
+
+                    // Atualizar a quantidade de vagas na coleção 'eletivas'
+                    await updateDoc(eletivaRef, {
+                        vagas: eletivaData.vagas - 1  // Subtrai 1 vaga
+                    });
+
+                    alertSuave("Inscrição realizada com sucesso!");
+                    //carregarInscricoes();
+                } else {
+                    alert("Eletiva não encontrada!");
                 }
-
-                alertSuave("Inscrição realizada com sucesso!");
-                //carregarInscricoes();
             } else {
                 alertSuave("Você já está inscrito!");
             }
