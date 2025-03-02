@@ -1,2 +1,8 @@
 *.csv
 dados/
+functions/
+node_modules/
+.firebaserc
+firebase.json
+package-lock.json
+package.json
