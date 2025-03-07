@@ -98,7 +98,16 @@ async function verificarNome() {
         alertSuave("Preencha todos os campos corretamente!");
         return;
     }
-
+    
+    function tratarNome(nome) {
+        // Converte para caixa alta e remove acentos de forma segura
+        nome = nome.toUpperCase();  // Converter para maiúsculas
+        nome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "");  // Remover acentos
+        nome = nome.replace(/ç/g, "c");  // Substituir "ç" por "c"
+        
+        return nome;
+    }
+    
     // Tratar o nome para caixa alta, sem acento e sem "ç"
     nomeDigitado = tratarNome(nomeDigitado);
 
