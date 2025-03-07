@@ -91,13 +91,16 @@ async function carregarEletivas() {
 
 // Função para verificar o nome e permitir a inscrição
 async function verificarNome() {
-    const nomeDigitado = nomeInput.value.trim();
+    let nomeDigitado = nomeInput.value.trim();
     const turmaSelecionada = turmaSelect.value;
 
     if (!nomeDigitado || !turmaSelecionada) {
         alertSuave("Preencha todos os campos corretamente!");
         return;
     }
+
+    // Tratar o nome para caixa alta, sem acento e sem "ç"
+    nomeDigitado = tratarNome(nomeDigitado);
 
     const q = query(collection(db, "alunos"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
     const querySnapshot = await getDocs(q);
@@ -120,6 +123,7 @@ async function verificarNome() {
         inscreverBtn.disabled = true;
     }
 }
+
 
 // Evento para o botão de verificação
 document.getElementById("verificar-btn").addEventListener("click", verificarNome);
