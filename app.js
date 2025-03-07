@@ -108,16 +108,19 @@ async function verificarNome() {
     if (!querySnapshot.empty) {
         const alunoData = querySnapshot.docs[0].data();
         if (!alunoData.inscrito) {
+            // Nome encontrado, habilitar a seleção de eletivas
             eletivaSelect.disabled = false;
             inscreverBtn.disabled = false;
             carregarEletivas();
         } else {
+            // Nome encontrado, mas já inscrito
             alertSuave("Você já está inscrito em uma eletiva!");
             nomeInput.value = "";
             eletivaSelect.disabled = true;
             inscreverBtn.disabled = true;
         }
     } else {
+        // Nome não encontrado, desabilitar a seleção de eletivas
         alertSuave("Nome não encontrado na turma selecionada!");
         eletivaSelect.disabled = true;
         inscreverBtn.disabled = true;
