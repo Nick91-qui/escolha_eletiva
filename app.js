@@ -41,23 +41,19 @@ function alertSuave(mensagem) {
     }, 3000);
 }
 
-// Carregar turmas (isso só será feito uma vez ao carregar a página)
+// Carregar turmas
 async function carregarTurmas() {
     try {
         const alunosSnapshot = await getDocs(collection(db, "alunos"));
         const turmas = new Set();
-        
+
         alunosSnapshot.forEach(doc => turmas.add(doc.data().turma));
-        
-        // Verifica se há turmas
+
         if (turmas.size === 0) {
             alertSuave("Nenhuma turma encontrada no banco de dados.");
         }
 
-        // Limpa as opções anteriores
         turmaSelect.innerHTML = '<option value="">Selecione a turma</option>';
-        
-        // Adiciona as turmas ao select
         turmas.forEach(turma => {
             const option = document.createElement("option");
             option.value = turma;
@@ -70,7 +66,7 @@ async function carregarTurmas() {
     }
 }
 
-// Carregar eletivas disponíveis
+// Carregar eletivas
 async function carregarEletivas() {
     eletivaSelect.innerHTML = '<option value="">Selecione a eletiva</option>';
     const eletivasSnapshot = await getDocs(collection(db, "eletivas"));
@@ -82,23 +78,14 @@ async function carregarEletivas() {
         option.textContent = `${eletiva.nomeEletiva} (${eletiva.vagas} vagas)`;
 
         if (eletiva.vagas === 0) {
-            option.disabled = true; // Desativar eletivas sem vagas
+            option.disabled = true; 
         }
 
         eletivaSelect.appendChild(option);
     });
 }
 
-// Função para tratar o nome (caixa alta, sem acento e sem "ç")
-function tratarNome(nome) {
-    nome = nome.toUpperCase();  // Converter para maiúsculas
-    nome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "");  // Remover acentos
-    nome = nome.replace(/ç/g, "c");  // Substituir "ç" por "c"
-    
-    return nome;
-}
-
-// Função para verificar o nome e permitir a inscrição
+// Função para verificar o nome
 async function verificarNome() {
     let nomeDigitado = nomeInput.value.trim();
     const turmaSelecionada = turmaSelect.value;
@@ -107,48 +94,56 @@ async function verificarNome() {
         alertSuave("Preencha todos os campos corretamente!");
         return;
     }
-    
-    // Tratar o nome para caixa alta, sem acento e sem "ç"
+
+    // Função para tratar o nome (remover acento, caixa alta, etc.)
+    function tratarNome(nome) {
+        nome = nome.toUpperCase();
+        nome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+        nome = nome.replace(/ç/g, "c"); 
+        return nome;
+    }
+
     nomeDigitado = tratarNome(nomeDigitado);
 
     const q = query(collection(db, "alunos"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
     const querySnapshot = await getDocs(q);
 
-    if (querySnapshot.empty) {
-        // Nome não encontrado, desabilitar a seleção de eletivas
-        alertSuave("Nome não encontrado na turma selecionada!");
-        eletivaSelect.disabled = true;
-        inscreverBtn.disabled = true;
-    } else {
+    if (!querySnapshot.empty) {
         const alunoData = querySnapshot.docs[0].data();
         if (!alunoData.inscrito) {
-            // Nome encontrado, habilitar a seleção de eletivas
             eletivaSelect.disabled = false;
             inscreverBtn.disabled = false;
             carregarEletivas();
         } else {
-            // Nome encontrado, mas já inscrito
             alertSuave("Você já está inscrito em uma eletiva!");
             nomeInput.value = "";
             eletivaSelect.disabled = true;
             inscreverBtn.disabled = true;
         }
+    } else {
+        alertSuave("Nome não encontrado na turma selecionada!");
+        eletivaSelect.disabled = true;
+        inscreverBtn.disabled = true;
     }
 }
 
-// Evento para o botão de verificação
+// Evento de verificação do nome
 document.getElementById("verificar-btn").addEventListener("click", verificarNome);
 
-// Inscrição de aluno
+// Inscrição do aluno
 document.getElementById("inscricao-form").addEventListener("submit", async (e) => {
     e.preventDefault();
-    
+
     const nomeDigitado = nomeInput.value.trim();
     const turmaSelecionada = turmaSelect.value;
     const eletivaSelecionada = eletivaSelect.value;
 
+    // Verificar se o nome foi validado corretamente e se a eletiva foi selecionada
+    if (!nomeDigitado || !turmaSelecionada || !eletivaSelecionada) {
+        return;  
+    }
+
     try {
-        // Buscar aluno no Firebase
         const q = query(collection(db, "alunos"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
         const alunoSnapshot = await getDocs(q);
 
@@ -157,26 +152,22 @@ document.getElementById("inscricao-form").addEventListener("submit", async (e) =
             const alunoData = alunoSnapshot.docs[0].data();
 
             if (!alunoData.inscrito) {
-                // Buscar o nome da eletiva na coleção 'eletivas'
                 const eletivaRef = doc(db, "eletivas", eletivaSelecionada);
                 const eletivaSnapshot = await getDoc(eletivaRef);
 
                 if (eletivaSnapshot.exists()) {
                     const eletivaData = eletivaSnapshot.data();
 
-                    // Atualizar aluno com o nome da eletiva
                     await updateDoc(alunoRef, {
-                        eletiva: eletivaData.nomeEletiva,  // Aqui está o nome da eletiva
+                        eletiva: eletivaData.nomeEletiva,
                         inscrito: true
                     });
 
-                    // Atualizar a quantidade de vagas na coleção 'eletivas'
                     await updateDoc(eletivaRef, {
-                        vagas: eletivaData.vagas - 1  // Subtrai 1 vaga
+                        vagas: eletivaData.vagas - 1 
                     });
 
                     alertSuave("Inscrição realizada com sucesso!");
-                    // Limpa o formulário após a inscrição
                     nomeInput.value = "";
                     turmaSelect.value = "";
                     eletivaSelect.value = "";
@@ -195,8 +186,9 @@ document.getElementById("inscricao-form").addEventListener("submit", async (e) =
     }
 });
 
-// Carregar as turmas ao iniciar a página
+// Carregar turmas ao iniciar a página
 carregarTurmas();
+
 
 
 
