@@ -89,6 +89,15 @@ async function carregarEletivas() {
     });
 }
 
+// Função para tratar o nome (caixa alta, sem acento e sem "ç")
+function tratarNome(nome) {
+    nome = nome.toUpperCase();  // Converter para maiúsculas
+    nome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "");  // Remover acentos
+    nome = nome.replace(/ç/g, "c");  // Substituir "ç" por "c"
+    
+    return nome;
+}
+
 // Função para verificar o nome e permitir a inscrição
 async function verificarNome() {
     let nomeDigitado = nomeInput.value.trim();
@@ -99,22 +108,18 @@ async function verificarNome() {
         return;
     }
     
-    function tratarNome(nome) {
-        // Converte para caixa alta e remove acentos de forma segura
-        nome = nome.toUpperCase();  // Converter para maiúsculas
-        nome = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "");  // Remover acentos
-        nome = nome.replace(/ç/g, "c");  // Substituir "ç" por "c"
-        
-        return nome;
-    }
-    
     // Tratar o nome para caixa alta, sem acento e sem "ç"
     nomeDigitado = tratarNome(nomeDigitado);
 
     const q = query(collection(db, "alunos"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
     const querySnapshot = await getDocs(q);
 
-    if (!querySnapshot.empty) {
+    if (querySnapshot.empty) {
+        // Nome não encontrado, desabilitar a seleção de eletivas
+        alertSuave("Nome não encontrado na turma selecionada!");
+        eletivaSelect.disabled = true;
+        inscreverBtn.disabled = true;
+    } else {
         const alunoData = querySnapshot.docs[0].data();
         if (!alunoData.inscrito) {
             // Nome encontrado, habilitar a seleção de eletivas
@@ -128,14 +133,8 @@ async function verificarNome() {
             eletivaSelect.disabled = true;
             inscreverBtn.disabled = true;
         }
-    } else {
-        // Nome não encontrado, desabilitar a seleção de eletivas
-        alertSuave("Nome não encontrado na turma selecionada!");
-        eletivaSelect.disabled = true;
-        inscreverBtn.disabled = true;
     }
 }
-
 
 // Evento para o botão de verificação
 document.getElementById("verificar-btn").addEventListener("click", verificarNome);
@@ -203,6 +202,7 @@ document.getElementById("inscricao-form").addEventListener("submit", async (e) =
 
 // Carregar as turmas ao iniciar a página
 carregarTurmas();
+
 
 
 
