@@ -41,7 +41,7 @@ function alertSuave(mensagem) {
     }, 3000);
 }
 
-// Carregar turmas
+// Carregar turmas (isso só será feito uma vez ao carregar a página)
 async function carregarTurmas() {
     const alunosSnapshot = await getDocs(collection(db, "alunos"));
     const turmas = new Set();
@@ -55,42 +55,6 @@ async function carregarTurmas() {
         turmaSelect.appendChild(option);
     });
 }
-
-carregarTurmas();
-
-let timeout;
-
-// Verificar nome e turma ao digitar
-nomeInput.addEventListener("input", () => {
-    clearTimeout(timeout);
-    timeout = setTimeout(async () => {
-        const nomeDigitado = nomeInput.value.trim();
-        const turmaSelecionada = turmaSelect.value;
-
-        if (nomeDigitado && turmaSelecionada) {
-            const q = query(collection(db, "alunos"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
-            const querySnapshot = await getDocs(q);
-
-            if (!querySnapshot.empty) {
-                const alunoData = querySnapshot.docs[0].data();
-                if (!alunoData.inscrito) {
-                    eletivaSelect.disabled = false;
-                    inscreverBtn.disabled = false;
-                    carregarEletivas();
-                } else {
-                    alertSuave("Você já está inscrito em uma eletiva!");
-                    nomeInput.value = "";
-                    eletivaSelect.disabled = true;
-                    inscreverBtn.disabled = true;
-                }
-            } else {
-                alertSuave("Nome não encontrado na turma selecionada!");
-                eletivaSelect.disabled = true;
-                inscreverBtn.disabled = true;
-            }
-        }
-    }, 1500);
-});
 
 // Carregar eletivas disponíveis
 async function carregarEletivas() {
@@ -110,6 +74,41 @@ async function carregarEletivas() {
         eletivaSelect.appendChild(option);
     });
 }
+
+// Função para verificar o nome e permitir a inscrição
+async function verificarNome() {
+    const nomeDigitado = nomeInput.value.trim();
+    const turmaSelecionada = turmaSelect.value;
+
+    if (!nomeDigitado || !turmaSelecionada) {
+        alertSuave("Preencha todos os campos corretamente!");
+        return;
+    }
+
+    const q = query(collection(db, "alunos"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+        const alunoData = querySnapshot.docs[0].data();
+        if (!alunoData.inscrito) {
+            eletivaSelect.disabled = false;
+            inscreverBtn.disabled = false;
+            carregarEletivas();
+        } else {
+            alertSuave("Você já está inscrito em uma eletiva!");
+            nomeInput.value = "";
+            eletivaSelect.disabled = true;
+            inscreverBtn.disabled = true;
+        }
+    } else {
+        alertSuave("Nome não encontrado na turma selecionada!");
+        eletivaSelect.disabled = true;
+        inscreverBtn.disabled = true;
+    }
+}
+
+// Evento para o botão de verificação
+document.getElementById("verificar-btn").addEventListener("click", verificarNome);
 
 // Inscrição de aluno
 document.getElementById("inscricao-form").addEventListener("submit", async (e) => {
@@ -153,7 +152,12 @@ document.getElementById("inscricao-form").addEventListener("submit", async (e) =
                     });
 
                     alertSuave("Inscrição realizada com sucesso!");
-                    //carregarInscricoes();
+                    // Limpa o formulário após a inscrição
+                    nomeInput.value = "";
+                    turmaSelect.value = "";
+                    eletivaSelect.value = "";
+                    eletivaSelect.disabled = true;
+                    inscreverBtn.disabled = true;
                 } else {
                     alert("Eletiva não encontrada!");
                 }
@@ -166,6 +170,7 @@ document.getElementById("inscricao-form").addEventListener("submit", async (e) =
         alertSuave("Erro ao realizar inscrição. Tente novamente.");
     }
 });
+
 
   /*
 async function carregarInscricoes() {
