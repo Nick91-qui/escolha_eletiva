@@ -147,11 +147,6 @@ document.getElementById("inscricao-form").addEventListener("submit", async (e) =
     const turmaSelecionada = turmaSelect.value;
     const eletivaSelecionada = eletivaSelect.value;
 
-    if (!eletivaSelecionada) {
-        alertSuave("Selecione uma eletiva!");
-        return;
-    }
-
     try {
         // Buscar aluno no Firebase
         const q = query(collection(db, "alunos"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
