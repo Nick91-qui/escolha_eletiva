@@ -183,7 +183,7 @@ async function inscreverAluno(event) {
                 if (eletivaSnapshot.exists()) {
                     const eletivaData = eletivaSnapshot.data();
                     
-                    if (eletivaData.vagas > 0) {  // **Verificação de vagas antes da inscrição**
+                    if (eletivaData.vagas > 0) {  // **Impede inscrição se vagas for 0 ou negativo**
                         await updateDoc(alunoRef, { eletiva: eletivaData.nomeEletiva, inscrito: true });
                         await updateDoc(eletivaRef, { vagas: eletivaData.vagas - 1 });
                         alertSuave("Inscrição realizada com sucesso!");
@@ -206,6 +206,7 @@ async function inscreverAluno(event) {
         alertSuave("Erro ao realizar inscrição.");
     }
 }
+
 
 
 
