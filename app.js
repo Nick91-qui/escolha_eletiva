@@ -160,7 +160,6 @@ async function inscreverAluno(event) {
     const nomeDigitado = tratarNome(nomeInput.value.trim());
     const turmaSelecionada = turmaSelect.value;
 
-    // Capturar a eletiva selecionada
     const eletivaSelecionada = document.querySelector('input[name="eletiva"]:checked');
 
     if (!nomeDigitado || !turmaSelecionada || !eletivaSelecionada) {
@@ -177,25 +176,40 @@ async function inscreverAluno(event) {
         if (!alunoSnapshot.empty) {
             const alunoRef = doc(db, "alunos", alunoSnapshot.docs[0].id);
             const alunoData = alunoSnapshot.docs[0].data();
+
             if (!alunoData.inscrito) {
                 const eletivaRef = doc(db, "eletivas", eletivaId);
                 const eletivaSnapshot = await getDoc(eletivaRef);
+
                 if (eletivaSnapshot.exists()) {
-                    await updateDoc(alunoRef, { eletiva: eletivaSnapshot.data().nomeEletiva, inscrito: true });
-                    await updateDoc(eletivaRef, { vagas: eletivaSnapshot.data().vagas - 1 });
-                    alertSuave("Inscrição realizada com sucesso!");
-                    nomeInput.value = "";
-                    turmaSelect.value = "";
-                    eletivaContainer.innerHTML = "";
-                    inscreverBtn.disabled = true;
-                } else alertSuave("Eletiva não encontrada!");
-            } else alertSuave("Você já está inscrito!");
+                    const eletivaData = eletivaSnapshot.data();
+
+                    // 🚨 Adicionando a verificação de vagas antes de atualizar a inscrição 🚨
+                    if (eletivaData.vagas > 0) {
+                        await updateDoc(alunoRef, { eletiva: eletivaData.nomeEletiva, inscrito: true });
+                        await updateDoc(eletivaRef, { vagas: eletivaData.vagas - 1 });
+
+                        alertSuave("Inscrição realizada com sucesso!");
+                        nomeInput.value = "";
+                        turmaSelect.value = "";
+                        eletivaContainer.innerHTML = "";
+                        inscreverBtn.disabled = true;
+                    } else {
+                        alertSuave("Não há mais vagas disponíveis para essa eletiva!");
+                    }
+                } else {
+                    alertSuave("Eletiva não encontrada!");
+                }
+            } else {
+                alertSuave("Você já está inscrito!");
+            }
         }
     } catch (error) {
         console.error("Erro ao inscrever:", error);
         alertSuave("Erro ao realizar inscrição.");
     }
 }
+
 
 document.getElementById("inscricao-form").addEventListener("submit", inscreverAluno);
 carregarTurmas();
