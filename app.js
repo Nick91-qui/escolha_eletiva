@@ -77,10 +77,12 @@ async function carregarEletivas() {
         const eletiva = doc.data();
         const eletivaId = doc.id;
 
-        // Criar um elemento para a opção de eletiva
-        const label = document.createElement("label");
-        label.style.display = "block";
-        label.style.marginBottom = "5px";
+        // Criar um container para cada eletiva
+        const eletivaItem = document.createElement("div");
+        eletivaItem.style.display = "flex";
+        eletivaItem.style.alignItems = "center";
+        eletivaItem.style.gap = "8px"; // Espaço entre o botão de rádio e o texto
+        eletivaItem.style.marginBottom = "10px"; // Espaço entre as eletivas
 
         // Criar o botão de rádio
         const radio = document.createElement("input");
@@ -92,15 +94,21 @@ async function carregarEletivas() {
             radio.disabled = true; // Desativar caso não tenha vagas
         }
 
-        // Adicionar o texto com o nome da eletiva e número de vagas
-        label.appendChild(radio);
-        label.appendChild(document.createTextNode(` ${eletiva.nomeEletiva} (${eletiva.vagas} vagas)`));
+        // Criar o texto com o nome da eletiva e número de vagas
+        const labelText = document.createElement("span");
+        labelText.textContent = `${eletiva.nomeEletiva} (${eletiva.vagas} vagas)`;
 
-        eletivaContainer.appendChild(label);
+        // Adicionar os elementos ao container
+        eletivaItem.appendChild(radio);
+        eletivaItem.appendChild(labelText);
+
+        // Adicionar ao container principal
+        eletivaContainer.appendChild(eletivaItem);
     });
 
     inscreverBtn.disabled = false;
 }
+
 
 // Tratar nome
 function tratarNome(nome) {
