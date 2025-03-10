@@ -18,7 +18,7 @@ const db = getFirestore(app);
 // Elementos do formulário
 const turmaSelect = document.getElementById("turma");
 const nomeInput = document.getElementById("nome");
-const eletivaSelect = document.getElementById("eletiva");
+const eletivaContainer = document.getElementById("eletiva-container");
 const inscreverBtn = document.getElementById("inscrever-btn");
 const verificarBtn = document.getElementById("verificar-btn");
 
@@ -69,16 +69,37 @@ async function carregarTurmas() {
 
 // Carregar eletivas
 async function carregarEletivas() {
-    eletivaSelect.innerHTML = '<option value="">Selecione a eletiva</option>';
+    eletivaContainer.innerHTML = ""; // Limpar conteúdo antes de carregar novas opções
+
     const eletivasSnapshot = await getDocs(collection(db, "eletivas"));
+
     eletivasSnapshot.forEach(doc => {
         const eletiva = doc.data();
-        const option = document.createElement("option");
-        option.value = doc.id;
-        option.textContent = `${eletiva.nomeEletiva} (${eletiva.vagas} vagas)`;
-        if (eletiva.vagas === 0) option.disabled = true;
-        eletivaSelect.appendChild(option);
+        const eletivaId = doc.id;
+
+        // Criar um elemento para a opção de eletiva
+        const label = document.createElement("label");
+        label.style.display = "block";
+        label.style.marginBottom = "5px";
+
+        // Criar o botão de rádio
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "eletiva";
+        radio.value = eletivaId;
+
+        if (eletiva.vagas === 0) {
+            radio.disabled = true; // Desativar caso não tenha vagas
+        }
+
+        // Adicionar o texto com o nome da eletiva e número de vagas
+        label.appendChild(radio);
+        label.appendChild(document.createTextNode(` ${eletiva.nomeEletiva} (${eletiva.vagas} vagas)`));
+
+        eletivaContainer.appendChild(label);
     });
+
+    inscreverBtn.disabled = false;
 }
 
 // Tratar nome
@@ -103,18 +124,15 @@ async function verificarNome(event) {
     if (!querySnapshot.empty) {
         const alunoData = querySnapshot.docs[0].data();
         if (!alunoData.inscrito) {
-            eletivaSelect.disabled = false;
             inscreverBtn.disabled = false;
             carregarEletivas();
         } else {
             alertSuave("Você já está inscrito!");
             nomeInput.value = "";
-            eletivaSelect.disabled = true;
             inscreverBtn.disabled = true;
         }
     } else {
         alertSuave("Nome não encontrado!");
-        eletivaSelect.disabled = true;
         inscreverBtn.disabled = true;
     }
 }
@@ -127,9 +145,16 @@ async function inscreverAluno(event) {
     event.preventDefault();
     const nomeDigitado = tratarNome(nomeInput.value.trim());
     const turmaSelecionada = turmaSelect.value;
-    const eletivaSelecionada = eletivaSelect.value;
 
-    if (!nomeDigitado || !turmaSelecionada || !eletivaSelecionada) return;
+    // Capturar a eletiva selecionada
+    const eletivaSelecionada = document.querySelector('input[name="eletiva"]:checked');
+
+    if (!nomeDigitado || !turmaSelecionada || !eletivaSelecionada) {
+        alertSuave("Escolha uma eletiva antes de se inscrever!");
+        return;
+    }
+
+    const eletivaId = eletivaSelecionada.value;
 
     try {
         const q = query(collection(db, "alunos"), where("nomeAluno", "==", nomeDigitado), where("turma", "==", turmaSelecionada));
@@ -139,7 +164,7 @@ async function inscreverAluno(event) {
             const alunoRef = doc(db, "alunos", alunoSnapshot.docs[0].id);
             const alunoData = alunoSnapshot.docs[0].data();
             if (!alunoData.inscrito) {
-                const eletivaRef = doc(db, "eletivas", eletivaSelecionada);
+                const eletivaRef = doc(db, "eletivas", eletivaId);
                 const eletivaSnapshot = await getDoc(eletivaRef);
                 if (eletivaSnapshot.exists()) {
                     await updateDoc(alunoRef, { eletiva: eletivaSnapshot.data().nomeEletiva, inscrito: true });
@@ -147,8 +172,7 @@ async function inscreverAluno(event) {
                     alertSuave("Inscrição realizada com sucesso!");
                     nomeInput.value = "";
                     turmaSelect.value = "";
-                    eletivaSelect.value = "";
-                    eletivaSelect.disabled = true;
+                    eletivaContainer.innerHTML = "";
                     inscreverBtn.disabled = true;
                 } else alertSuave("Eletiva não encontrada!");
             } else alertSuave("Você já está inscrito!");
@@ -161,9 +185,6 @@ async function inscreverAluno(event) {
 
 document.getElementById("inscricao-form").addEventListener("submit", inscreverAluno);
 carregarTurmas();
-
-
-
 
   /*
 async function carregarInscricoes() {
