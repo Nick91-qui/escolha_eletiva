@@ -76,3 +76,10 @@ tr:nth-child(even) {
 tr:hover {
     background: #e9ecef;
 }
+
+#eletiva-container label {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Adiciona um espaço entre o rádio e o texto */
+    margin-bottom: 10px; /* Adiciona espaço entre as opções */
+}
