@@ -95,15 +95,13 @@ async function carregarEletivas() {
         radio.style.width = "16px";
         radio.style.height = "16px";
         radio.style.cursor = "pointer";
-
-        if (eletiva.vagas === 0) {
-            radio.disabled = true; // Desativar caso não tenha vagas
-        }
+        radio.disabled = eletiva.vagas === 0; // Apenas o botão será desativado
 
         // Criar o texto com o nome da eletiva e número de vagas
         const labelText = document.createElement("span");
         labelText.textContent = `${eletiva.nomeEletiva} (${eletiva.vagas} vagas)`;
         labelText.style.fontSize = "16px";
+        labelText.style.color = eletiva.vagas === 0 ? "gray" : "black"; // Cinza se não houver vagas
 
         // Adicionar os elementos ao container
         eletivaItem.appendChild(radio);
@@ -115,6 +113,7 @@ async function carregarEletivas() {
 
     inscreverBtn.disabled = false;
 }
+
 
 
 // Tratar nome
