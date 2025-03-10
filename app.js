@@ -67,7 +67,6 @@ async function carregarTurmas() {
     }
 }
 
-// Carregar eletivas
 async function carregarEletivas() {
     eletivaContainer.innerHTML = ""; // Limpar conteúdo antes de carregar novas opções
 
@@ -81,14 +80,21 @@ async function carregarEletivas() {
         const eletivaItem = document.createElement("div");
         eletivaItem.style.display = "flex";
         eletivaItem.style.alignItems = "center";
-        eletivaItem.style.gap = "8px"; // Espaço entre o botão de rádio e o texto
-        eletivaItem.style.marginBottom = "10px"; // Espaço entre as eletivas
+        eletivaItem.style.gap = "10px"; // Espaço entre os elementos
+        eletivaItem.style.marginBottom = "10px"; // Espaço entre as opções
+        eletivaItem.style.padding = "8px";
+        eletivaItem.style.border = "1px solid #ccc"; // Adicionar borda para separar melhor
+        eletivaItem.style.borderRadius = "5px"; // Bordas arredondadas
+        eletivaItem.style.backgroundColor = "#f9f9f9"; // Fundo suave para destaque
 
         // Criar o botão de rádio
         const radio = document.createElement("input");
         radio.type = "radio";
         radio.name = "eletiva";
         radio.value = eletivaId;
+        radio.style.width = "16px";
+        radio.style.height = "16px";
+        radio.style.cursor = "pointer";
 
         if (eletiva.vagas === 0) {
             radio.disabled = true; // Desativar caso não tenha vagas
@@ -97,6 +103,7 @@ async function carregarEletivas() {
         // Criar o texto com o nome da eletiva e número de vagas
         const labelText = document.createElement("span");
         labelText.textContent = `${eletiva.nomeEletiva} (${eletiva.vagas} vagas)`;
+        labelText.style.fontSize = "16px";
 
         // Adicionar os elementos ao container
         eletivaItem.appendChild(radio);
