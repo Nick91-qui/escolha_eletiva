@@ -43,18 +43,27 @@ function alertSuave(mensagem) {
 async function carregarTurmas() {
     try {
         const alunosSnapshot = await getDocs(collection(db, "alunos"));
-        const turmas = new Set();
+        let turmas = new Set();
+
         alunosSnapshot.forEach(doc => turmas.add(doc.data().turma));
+
+        if (turmas.size === 0) {
+            alertSuave("Nenhuma turma encontrada no banco de dados.");
+        }
+
         turmaSelect.innerHTML = '<option value="">Selecione a turma</option>';
-        turmas.forEach(turma => {
+
+        // Converter para array, ordenar e preencher o select
+        [...turmas].sort().forEach(turma => {
             const option = document.createElement("option");
             option.value = turma;
             option.textContent = turma;
             turmaSelect.appendChild(option);
         });
+
     } catch (error) {
         console.error("Erro ao carregar as turmas:", error);
-        alertSuave("Erro ao carregar as turmas.");
+        alertSuave("Erro ao carregar as turmas. Tente novamente.");
     }
 }
 
