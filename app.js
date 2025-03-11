@@ -76,16 +76,19 @@ async function carregarEletivas() {
         const eletiva = doc.data();
         const eletivaId = doc.id;
 
-        // Criar um container para cada eletiva
-        const eletivaItem = document.createElement("div");
-        eletivaItem.style.display = "flex";
-        eletivaItem.style.alignItems = "center";
-        eletivaItem.style.gap = "10px"; // Espaço entre os elementos
-        eletivaItem.style.marginBottom = "10px"; // Espaço entre as opções
-        eletivaItem.style.padding = "8px";
-        eletivaItem.style.border = "1px solid #ccc"; // Adicionar borda para separar melhor
-        eletivaItem.style.borderRadius = "5px"; // Bordas arredondadas
-        eletivaItem.style.backgroundColor = "#f9f9f9"; // Fundo suave para destaque
+        // Se a eletiva não tiver vagas ou tiver vagas negativas, pula para a próxima
+        if (eletiva.vagas > 0) {
+            // Criar um container para cada eletiva
+            const eletivaItem = document.createElement("div");
+            eletivaItem.style.display = "flex";
+            eletivaItem.style.alignItems = "center";
+            eletivaItem.style.gap = "10px"; // Espaço entre os elementos
+            eletivaItem.style.marginBottom = "10px"; // Espaço entre as opções
+            eletivaItem.style.padding = "8px";
+            eletivaItem.style.border = "1px solid #ccc"; // Adicionar borda para separar melhor
+            eletivaItem.style.borderRadius = "5px"; // Bordas arredondadas
+            eletivaItem.style.backgroundColor = "#f9f9f9"; // Fundo suave para destaque
+
 
         // Criar o botão de rádio
         const radio = document.createElement("input");
@@ -95,13 +98,13 @@ async function carregarEletivas() {
         radio.style.width = "16px";
         radio.style.height = "16px";
         radio.style.cursor = "pointer";
-        radio.disabled = eletiva.vagas === 0; // Apenas o botão será desativado
+        
 
         // Criar o texto com o nome da eletiva e número de vagas
         const labelText = document.createElement("span");
         labelText.textContent = `${eletiva.nomeEletiva} (${eletiva.vagas} vagas)`;
         labelText.style.fontSize = "16px";
-        labelText.style.color = eletiva.vagas === 0 ? "gray" : "black"; // Cinza se não houver vagas
+        
 
         // Adicionar os elementos ao container
         eletivaItem.appendChild(radio);
