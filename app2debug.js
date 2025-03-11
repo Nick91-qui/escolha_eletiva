@@ -1,9 +1,6 @@
 // Importar as funções necessárias do SDK do Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import { 
-    getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc, serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
-import { db, alertSuave, turmaSelect, eletivaContainer, inscreverBtn, nomeInput, verificarBtn } from "./app2debug";
+import { getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 // Configuração do Firebase
 const firebaseConfig = {
@@ -16,17 +13,17 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+export const db = getFirestore(app);
 
 // Elementos do formulário
-const turmaSelect = document.getElementById("turma");
-const nomeInput = document.getElementById("nome");
-const eletivaContainer = document.getElementById("eletiva-container");
-const inscreverBtn = document.getElementById("inscrever-btn");
-const verificarBtn = document.getElementById("verificar-btn");
+export const turmaSelect = document.getElementById("turma");
+export const nomeInput = document.getElementById("nome");
+export const eletivaContainer = document.getElementById("eletiva-container");
+export const inscreverBtn = document.getElementById("inscrever-btn");
+export const verificarBtn = document.getElementById("verificar-btn");
 
 // Função para exibir alertas
-function alertSuave(mensagem) {
+export function alertSuave(mensagem) {
     const alerta = document.createElement("div");
     alerta.textContent = mensagem;
     alerta.style.position = "fixed";
@@ -157,12 +154,13 @@ async function verificarNome(event) {
 // Evento de verificação do nome
 verificarBtn.addEventListener("click", verificarNome);
 
-
-// Inscrição com timestamp
+// Inscrição
 async function inscreverAluno(event) {
     event.preventDefault();
     const nomeDigitado = tratarNome(nomeInput.value.trim());
     const turmaSelecionada = turmaSelect.value;
+
+    // Capturar a eletiva selecionada
     const eletivaSelecionada = document.querySelector('input[name="eletiva"]:checked');
 
     if (!nomeDigitado || !turmaSelecionada || !eletivaSelecionada) {
@@ -179,36 +177,19 @@ async function inscreverAluno(event) {
         if (!alunoSnapshot.empty) {
             const alunoRef = doc(db, "alunos", alunoSnapshot.docs[0].id);
             const alunoData = alunoSnapshot.docs[0].data();
-
             if (!alunoData.inscrito) {
                 const eletivaRef = doc(db, "eletivas", eletivaId);
                 const eletivaSnapshot = await getDoc(eletivaRef);
-
                 if (eletivaSnapshot.exists()) {
-                    const eletivaData = eletivaSnapshot.data();
-
-                    if (eletivaData.vagas > 0) {  
-                        await updateDoc(alunoRef, { 
-                            eletiva: eletivaData.nomeEletiva, 
-                            inscrito: true,
-                            timestamp: serverTimestamp() // Adiciona a data e hora da inscrição
-                        });
-                        await updateDoc(eletivaRef, { vagas: eletivaData.vagas - 1 });
-
-                        alertSuave("Inscrição realizada com sucesso!");
-                        nomeInput.value = "";
-                        turmaSelect.value = "";
-                        eletivaContainer.innerHTML = "";
-                        inscreverBtn.disabled = true;
-                    } else {
-                        alertSuave("Não há mais vagas para essa eletiva!");
-                    }
-                } else {
-                    alertSuave("Eletiva não encontrada!");
-                }
-            } else {
-                alertSuave("Você já está inscrito!");
-            }
+                    await updateDoc(alunoRef, { eletiva: eletivaSnapshot.data().nomeEletiva, inscrito: true });
+                    await updateDoc(eletivaRef, { vagas: eletivaSnapshot.data().vagas - 1 });
+                    alertSuave("Inscrição realizada com sucesso!");
+                    nomeInput.value = "";
+                    turmaSelect.value = "";
+                    eletivaContainer.innerHTML = "";
+                    inscreverBtn.disabled = true;
+                } else alertSuave("Eletiva não encontrada!");
+            } else alertSuave("Você já está inscrito!");
         }
     } catch (error) {
         console.error("Erro ao inscrever:", error);
@@ -216,10 +197,8 @@ async function inscreverAluno(event) {
     }
 }
 
-// Evento de verificação do nome
-verificarBtn.addEventListener("click", verificarNome);
 document.getElementById("inscricao-form").addEventListener("submit", inscreverAluno);
-
+carregarTurmas();
 
   /*
 async function carregarInscricoes() {
