@@ -1,9 +1,6 @@
 // Importar as funções necessárias do SDK do Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import { 
-    getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc, serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
-import { db, alertSuave, turmaSelect, eletivaContainer, inscreverBtn, nomeInput, verificarBtn } from "./app2debug";
+import { getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 // Configuração do Firebase
 const firebaseConfig = {
@@ -157,8 +154,7 @@ async function verificarNome(event) {
 // Evento de verificação do nome
 verificarBtn.addEventListener("click", verificarNome);
 
-
-// Inscrição com timestamp
+// Inscrição
 async function inscreverAluno(event) {
     event.preventDefault();
     const nomeDigitado = tratarNome(nomeInput.value.trim());
@@ -186,15 +182,11 @@ async function inscreverAluno(event) {
 
                 if (eletivaSnapshot.exists()) {
                     const eletivaData = eletivaSnapshot.data();
-
+                    
+                    // Bloqueia inscrições caso as vagas sejam zero ou negativas
                     if (eletivaData.vagas > 0) {  
-                        await updateDoc(alunoRef, { 
-                            eletiva: eletivaData.nomeEletiva, 
-                            inscrito: true,
-                            timestamp: serverTimestamp() // Adiciona a data e hora da inscrição
-                        });
+                        await updateDoc(alunoRef, { eletiva: eletivaData.nomeEletiva, inscrito: true });
                         await updateDoc(eletivaRef, { vagas: eletivaData.vagas - 1 });
-
                         alertSuave("Inscrição realizada com sucesso!");
                         nomeInput.value = "";
                         turmaSelect.value = "";
@@ -216,10 +208,12 @@ async function inscreverAluno(event) {
     }
 }
 
-// Evento de verificação do nome
-verificarBtn.addEventListener("click", verificarNome);
-document.getElementById("inscricao-form").addEventListener("submit", inscreverAluno);
 
+
+
+
+document.getElementById("inscricao-form").addEventListener("submit", inscreverAluno);
+carregarTurmas();
 
   /*
 async function carregarInscricoes() {
