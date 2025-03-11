@@ -89,34 +89,31 @@ async function carregarEletivas() {
             eletivaItem.style.borderRadius = "5px"; // Bordas arredondadas
             eletivaItem.style.backgroundColor = "#f9f9f9"; // Fundo suave para destaque
 
+            // Criar o botão de rádio
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = "eletiva";
+            radio.value = eletivaId;
+            radio.style.width = "16px";
+            radio.style.height = "16px";
+            radio.style.cursor = "pointer";
 
-        // Criar o botão de rádio
-        const radio = document.createElement("input");
-        radio.type = "radio";
-        radio.name = "eletiva";
-        radio.value = eletivaId;
-        radio.style.width = "16px";
-        radio.style.height = "16px";
-        radio.style.cursor = "pointer";
-        
+            // Criar o texto com o nome da eletiva e número de vagas
+            const labelText = document.createElement("span");
+            labelText.textContent = `${eletiva.nomeEletiva} (${eletiva.vagas} vagas)`;
+            labelText.style.fontSize = "16px";
 
-        // Criar o texto com o nome da eletiva e número de vagas
-        const labelText = document.createElement("span");
-        labelText.textContent = `${eletiva.nomeEletiva} (${eletiva.vagas} vagas)`;
-        labelText.style.fontSize = "16px";
-        
+            // Adicionar os elementos ao container
+            eletivaItem.appendChild(radio);
+            eletivaItem.appendChild(labelText);
 
-        // Adicionar os elementos ao container
-        eletivaItem.appendChild(radio);
-        eletivaItem.appendChild(labelText);
-
-        // Adicionar ao container principal
-        eletivaContainer.appendChild(eletivaItem);
+            // Adicionar ao container principal
+            eletivaContainer.appendChild(eletivaItem);
+        }
     });
 
     inscreverBtn.disabled = false;
 }
-
 
 
 // Tratar nome
